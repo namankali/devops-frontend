@@ -1,73 +1,43 @@
-# React + TypeScript + Vite
+## AI DevOps Copilot – Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the frontend for an AI-powered DevOps Copilot system that enables real-time monitoring, AI-assisted debugging, and automated incident response.
 
-Currently, two official plugins are available:
+Built using React (TypeScript) and Material UI, the application provides an interactive dashboard for logs, system metrics, and an AI chat interface capable of analyzing issues and suggesting actions.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+##  Features
 
-## React Compiler
+- 📊 Real-time log monitoring with filtering and search  
+- 💬 AI chat interface for debugging and system queries  
+- ⚡ Action panel for executing AI-suggested operations (restart/scale services)  
+- 📈 Metrics visualization for latency, errors, and system health  
+- 🔔 Event-driven updates from GitHub and Docker Hub webhooks  
+- 🌙 Developer-friendly UI with responsive and clean design  
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-## Expanding the ESLint configuration
+## System Context
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+This frontend interacts with:
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Node.js backend for logs, metrics, and action APIs  
+- FastAPI AI service for LLM-based chat and tool execution  
+- Redis queues for asynchronous processing  
+- PostgreSQL for structured data storage  
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+The system follows an event-driven architecture powered by webhook integrations.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Tech Stack
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- React (TypeScript)
+- Material UI (MUI)
+- React Query (TanStack Query)
+- Axios
+- WebSockets (for real-time updates)
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+
+## Highlights
+
+- Combines DevOps observability with AI-driven automation  
+- Implements real-world event-driven workflows using webhooks  
+- Demonstrates production-level frontend architecture and API integration  
+- Designed for scalability, usability, and real-time system interaction  
