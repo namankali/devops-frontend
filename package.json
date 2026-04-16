@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "test": "echo \"No test cases yet\"",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "docker:build": "docker build --no-cache -t namankali/devops-frontend:latest .",
