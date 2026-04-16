@@ -28,7 +28,6 @@ export type LoginResponse = {
 };
 
 export type PipelineStats = {
-  total: number;
-  success: number;
-  failed: number;
+    total_builds: number;
+    failed_builds: number;
 };
