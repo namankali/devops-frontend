@@ -2,6 +2,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import Toast from "../utils/toast";
 import type { Login_in } from "../utils/types";
+import type { ApiResponse, BuildChart, BuildRun, LoginResponse } from "../helper/types";
 
 export default class Server {
     static BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3001"
@@ -92,8 +93,12 @@ export default class Server {
     }
 
     // Users
-    static async signin(obj: Login_in) {
-        return this.makeRequest("post", "/api/users/v1/login", obj)
+    static async signin(obj: Login_in): Promise<LoginResponse> {
+        return this.makeRequest<LoginResponse>(
+            "post",
+            "/api/users/v1/login",
+            obj
+        );
     }
 
 
@@ -101,18 +106,27 @@ export default class Server {
     static async get_build_count() {
         return this.makeRequest("get", "/api/actions/v1/pipeline")
     }
+    static async buildRunInfo(): Promise<ApiResponse<BuildRun[]>> {
+        return this.makeRequest<ApiResponse<BuildRun[]>>(
+            "get",
+            "/api/actions/v1/info/build"
+        );
+    }
 
-    static async buildRunInfo() {
-        return this.makeRequest("get", "/api/actions/v1/info/build")
+    static async mainBuildBuildInfo(): Promise<ApiResponse<BuildRun[]>> {
+        return this.makeRequest<ApiResponse<BuildRun[]>>(
+            "get",
+            "/api/actions/v1/info/main"
+        );
     }
-    
-    static async mainBuildBuildInfo() {
-        return this.makeRequest("get", "/api/actions/v1/info/main")
+
+
+    static async buildDurationChart(): Promise<ApiResponse<BuildChart[]>> {
+        return this.makeRequest<ApiResponse<BuildChart[]>>(
+            "get",
+            "/api/actions/v1/build/chart"
+        );
     }
-    
-    static async buildDurationChart() {
-        return this.makeRequest("get", "/api/actions/v1/build/chart")
-    }
-    
-    
+
+
 }   
