@@ -26,3 +26,9 @@ export type LoginResponse = {
     success: boolean;
     token?: string;
 };
+
+export type PipelineStats = {
+  total: number;
+  success: number;
+  failed: number;
+};

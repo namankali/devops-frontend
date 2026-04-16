@@ -2,7 +2,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import Toast from "../utils/toast";
 import type { Login_in } from "../utils/types";
-import type { ApiResponse, BuildChart, BuildRun, LoginResponse } from "../helper/types";
+import type { ApiResponse, BuildChart, BuildRun, LoginResponse, PipelineStats } from "../helper/types";
 import type { MainBranchBuildInfo } from "../helper/interfaces";
 
 export default class Server {
@@ -104,8 +104,11 @@ export default class Server {
 
 
     // events
-    static async get_build_count() {
-        return this.makeRequest("get", "/api/actions/v1/pipeline")
+    static async get_build_count(): Promise<ApiResponse<PipelineStats>> {
+        return this.makeRequest<ApiResponse<PipelineStats>>(
+            "get",
+            "/api/actions/v1/pipeline"
+        );
     }
     static async buildRunInfo(): Promise<ApiResponse<BuildRun[]>> {
         return this.makeRequest<ApiResponse<BuildRun[]>>(
