@@ -1,7 +1,8 @@
-import type React from "react";
 import { Paper, Typography, useTheme } from "@mui/material";
+import usePipelineStats from "../../hooks/usePipelineStats";
 const Build_failure: React.FC = () => {
     const theme = useTheme()
+    const { failedRuns } = usePipelineStats()
     return (
         <Paper
             elevation={0}
@@ -17,7 +18,7 @@ const Build_failure: React.FC = () => {
                 justifyContent: "center"
             }}
         >
-            <Typography variant="h1">2</Typography>
+            <Typography variant="h1">{failedRuns}</Typography>
             <Typography variant="h6">Build Failures</Typography>
         </Paper>
     )

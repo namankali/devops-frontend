@@ -1,1 +1,64 @@
+name: devops-frontend
+
+on:
+    push:
+        branches:
+            - main
+            - development
+
+jobs:
+    build-test:
+        name: Build
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout-repo
+              uses: actions/checkout@v4
+
+            - name: setup node
+              uses: actions/setup-node@v4
+              with: 
+                node-version: 20
+                cache: npm 
+            
+            - name: Install Dependencies
+              run: npm install
+
+            - name: Run Lint
+              run: npm run lint --if-present
+              
+            - name: Run tests
+              run: npm test -- --passWithNoTests
+
+            
+    docker-build-push:
+        name: Build & Push Docker Image
+        runs-on: ubuntu-latest
+        needs: build-test
+
+        steps:
+            - name: Checkout repo
+              uses: actions/checkout@v4
+
+            - name: Setup Docker Buildx
+              uses: docker/setup-bildx-actions@v3
+
+            - name: Login to DockerHub
+              uses: docker/login-action@v3
+              with:
+                username: ${{secrets.username}}
+                password: ${{secrets.password}}
+
+            - name: Build and push Image
+              run: docker buildx build --platform Linux/amd64 -t namankali/devops-frontend:latest --push .
+
+
+    deploy:
+        name: Deploy Frontend
+        runs-on: ubuntu-latest
+        needs: docker-build-push
+
+        steps:
+            - name: Placeholder
+              run: echo "Deploy step coming soon"
 

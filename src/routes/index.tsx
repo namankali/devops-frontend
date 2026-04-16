@@ -5,6 +5,8 @@ import Login from "../pages/login";
 import useAuthStore from "../helper/infostore";
 import Home from "../pages/home";
 import Builds from "../pages/builds";
+import LogViewer from "../pages/logViewer";
+import Assistant from "../pages/assistant";
 
 const AppRoutes = () => {
     const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -28,6 +30,8 @@ const AppRoutes = () => {
                 >
                     <Route index element={<Home />} />
                     <Route path="builds" element={<Builds />} />
+                    <Route path="lv" element={<LogViewer />} />
+                    <Route path="assistant" element={<Assistant />} />
                     <Route />
                 </Route>
             </Routes>

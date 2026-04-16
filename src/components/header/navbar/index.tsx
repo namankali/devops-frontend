@@ -4,7 +4,13 @@ import CustomListItem from "./customListItems";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const NavBar: React.FC = () => {
-    const tabs = ["dashboard", "builds", "metrics", "iam", "actions"]
+    const tabs = [
+        "dashboard",
+        "builds",
+        "lv",
+        "assistant",
+        "actions"
+    ]
     const navigate = useNavigate()
     const location = useLocation()
 
@@ -27,14 +33,24 @@ const NavBar: React.FC = () => {
                 flexDirection: "row"
             }}
         >
-            {tabs.map((tabname) => (
-                <CustomListItem
-                    key={tabname}
-                    name={tabname}
-                    selected={currentTab === tabname}
-                    onClick={() => onClickTab(tabname)}
-                />
-            ))}
+            {tabs.map((tabname) => {
+                let tabname_ = undefined
+                if (tabname === "lv") {
+                    tabname_ = "Log Viewer"
+                }
+                if (tabname === "assistant") {
+                    tabname_ = "AI Assistant"
+                }
+
+                return (
+                    <CustomListItem
+                        key={tabname}
+                        name={tabname_ ?? tabname}
+                        selected={currentTab === tabname}
+                        onClick={() => onClickTab(tabname)}
+                    />
+                )
+            })}
         </List>
     )
 }

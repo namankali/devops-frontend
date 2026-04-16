@@ -89,11 +89,30 @@ export default class Server {
                 status: 500,
             };
         }
-
     }
 
     // Users
     static async signin(obj: Login_in) {
         return this.makeRequest("post", "/api/users/v1/login", obj)
     }
+
+
+    // events
+    static async get_build_count() {
+        return this.makeRequest("get", "/api/actions/v1/pipeline")
+    }
+
+    static async buildRunInfo() {
+        return this.makeRequest("get", "/api/actions/v1/info/build")
+    }
+    
+    static async mainBuildBuildInfo() {
+        return this.makeRequest("get", "/api/actions/v1/info/main")
+    }
+    
+    static async buildDurationChart() {
+        return this.makeRequest("get", "/api/actions/v1/build/chart")
+    }
+    
+    
 }   

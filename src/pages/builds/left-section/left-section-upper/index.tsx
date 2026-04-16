@@ -2,6 +2,7 @@ import { Box } from "@mui/system"
 import type React from "react"
 import Build_failure from "../../../../components/build-failures"
 import Pipeline_runs from "../../../../components/pipeline-runs"
+import BuildRunGrid from "../../../../components/buildRunsGrid"
 
 const Left_section_upper: React.FC = () => {
     return (
@@ -9,6 +10,7 @@ const Left_section_upper: React.FC = () => {
             sx={{
                 flex: 2,
                 display: "flex",
+                gap: 1
             }}
         >
             <Box
@@ -28,7 +30,7 @@ const Left_section_upper: React.FC = () => {
                     flex: 1
                 }}
             >
-                second
+                <BuildRunGrid />
             </Box>
         </Box>
     )

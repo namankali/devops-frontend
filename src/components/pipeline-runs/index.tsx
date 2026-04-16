@@ -1,7 +1,10 @@
 import type React from "react";
 import { Paper, Typography, useTheme } from "@mui/material";
+import usePipelineStats from "../../hooks/usePipelineStats";
+
 const Pipeline_runs: React.FC = () => {
     const theme = useTheme()
+    const { totalRuns } = usePipelineStats()
     return (
         <Paper
             elevation={0}
@@ -17,7 +20,7 @@ const Pipeline_runs: React.FC = () => {
                 justifyContent: "center"
             }}
         >
-            <Typography variant="h1">75</Typography>
+            <Typography variant="h1">{totalRuns}</Typography>
             <Typography variant="h6">Pipelines Runs</Typography>
         </Paper>
     )
