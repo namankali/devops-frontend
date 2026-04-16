@@ -33,7 +33,7 @@ const BuildRunGrid: React.FC = () => {
             }}
         >
             {
-                data.map((obj: BuildRun) => (
+                data.map((obj: any) => (
                     <Tooltip
                         title={
                             <Box>

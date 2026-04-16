@@ -3,6 +3,7 @@ import Cookies from "js-cookie";
 import Toast from "../utils/toast";
 import type { Login_in } from "../utils/types";
 import type { ApiResponse, BuildChart, BuildRun, LoginResponse } from "../helper/types";
+import type { MainBranchBuildInfo } from "../helper/interfaces";
 
 export default class Server {
     static BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3001"
@@ -113,8 +114,8 @@ export default class Server {
         );
     }
 
-    static async mainBuildBuildInfo(): Promise<ApiResponse<BuildRun[]>> {
-        return this.makeRequest<ApiResponse<BuildRun[]>>(
+    static async mainBuildBuildInfo(): Promise<ApiResponse<MainBranchBuildInfo[]>> {
+        return this.makeRequest<ApiResponse<MainBranchBuildInfo[]>>(
             "get",
             "/api/actions/v1/info/main"
         );
