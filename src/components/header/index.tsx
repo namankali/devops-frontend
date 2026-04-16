@@ -2,8 +2,7 @@ import { Box } from "@mui/material"
 import NavBar from "./navbar"
 import { useTheme } from "@mui/system"
 
-interface Props { }
-const Header: React.FC = (props: Props) => {
+const Header: React.FC = () => {
     const theme = useTheme()
     return (
         <Box

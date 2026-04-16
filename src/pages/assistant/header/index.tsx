@@ -17,3 +17,5 @@ const AssistantHeader: React.FC = () => {
         </Box>
     )
 }
+
+export default AssistantHeader

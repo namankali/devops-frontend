@@ -13,7 +13,7 @@ export default class Server {
     }
 
 
-    static async makeRequest<T = any>(
+    static async makeRequest<T = unknown>(
         method: string,
         endpoint: string,
         data: { [key: string]: any } = {},
