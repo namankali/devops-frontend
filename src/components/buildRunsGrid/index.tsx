@@ -5,6 +5,7 @@ import type { BuildRun } from "../../helper/interfaces";
 import CustomSkeleton from "../loader/customSkeleton";
 import { capitalize, Tooltip } from "@mui/material";
 import { formattedDate } from "../../helper/format";
+import React from "react";
 
 const BuildRunGrid: React.FC = () => {
     const { data, isLoading } = useBuildRunsInfo()
@@ -42,6 +43,8 @@ const BuildRunGrid: React.FC = () => {
                                 <div><strong>Status:</strong> {formattedDate(obj.created_at)}</div>
                             </Box>
                         }
+                        placement="top-end"
+                        arrow
                     >
                         <Box
                             key={obj.id}
@@ -49,21 +52,31 @@ const BuildRunGrid: React.FC = () => {
                             display="flex"
                             alignItems="center"
                             justifyContent="center"
-                            borderRadius={2}
+                            borderRadius={3}
                             fontWeight={600}
-                            fontSize={14}
+                            fontSize={13}
                             color="#fff"
                             sx={{
-                                backgroundColor: colorMap[obj.status] || colorMap.default,
+                                background: `linear-gradient(135deg, ${colorMap[obj.status]}cc, ${colorMap[obj.status]})`,
+                                backdropFilter: "blur(6px)",
                                 cursor: "pointer",
-                                transition: "all 0.2s",
+                                transition: "transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease",
+                                boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+
                                 "&:hover": {
-                                    opacity: 0.85,
-                                    transform: "scale(1.05)",
+                                    transform: "translateY(-2px) scale(1.04)",
+                                    boxShadow: "0 8px 18px rgba(0,0,0,0.25)",
+                                    opacity: 0.95,
+                                },
+
+                                "&:active": {
+                                    transform: "scale(0.98)",
                                 },
                             }}
                         >
-                            {obj.repo_name.split("-")[0].slice(0, 3)}-{obj.repo_name.split("-")[1]}-{obj.run_id}
+                            {obj.repo_name.split("-")[0].slice(0, 3)}-
+                            {obj.repo_name.split("-")[1]}-
+                            {obj.run_id}
                         </Box>
                     </Tooltip>
                 ))
@@ -72,4 +85,4 @@ const BuildRunGrid: React.FC = () => {
     )
 }
 
-export default BuildRunGrid
+export default React.memo(BuildRunGrid)

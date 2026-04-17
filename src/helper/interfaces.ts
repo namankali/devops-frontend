@@ -17,5 +17,9 @@ export interface MainBranchBuildInfo {
     status: string
 }
 
+export interface JobQueueData {
+    date: string;
+    jobs: number
+}
 
 
