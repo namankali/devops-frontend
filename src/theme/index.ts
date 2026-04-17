@@ -1,4 +1,12 @@
-import { createTheme, alpha } from "@mui/material/styles";
+import { createTheme, alpha, type Shadows } from "@mui/material/styles";
+
+const CustomShadows: Shadows = [
+  "none",
+  "0px 2px 8px rgba(0,0,0,0.3)",
+  "0px 4px 16px rgba(0,0,0,0.35)",
+  "0px 8px 24px rgba(0,0,0,0.4)",
+  ...Array(21).fill("0px 8px 32px rgba(0,0,0,0.45)"),
+] as Shadows
 
 export const theme = createTheme({
   palette: {
@@ -61,13 +69,7 @@ export const theme = createTheme({
 
   spacing: 8,
 
-  shadows: [
-    "none",
-    "0px 2px 8px rgba(0,0,0,0.3)",
-    "0px 4px 16px rgba(0,0,0,0.35)",
-    "0px 8px 24px rgba(0,0,0,0.4)",
-    ...Array(21).fill("0px 8px 32px rgba(0,0,0,0.45)"),
-  ],
+  shadows: CustomShadows,
 
   components: {
     MuiCard: {
