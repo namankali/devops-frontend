@@ -50,7 +50,7 @@ jobs:
                 password: ${{secrets.DOCKER_PASSWORD}}
 
             - name: Build and push Image
-              run: docker buildx build --platform Linux/amd64 -t namankali/devops-frontend:latest --push .
+              run: docker buildx build --platform Linux/amd64 -t namankali/devops-frontend:latest --push 
 
 
     deploy:
