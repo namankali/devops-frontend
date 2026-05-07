@@ -20,9 +20,9 @@ interface BuildDurationChart_ {
 
 const BuildDurationChart: React.FC<BuildDurationChart_> = (props) => {
     const theme = useTheme()
-    const { data, loading } = useBuildDurationChart()
+    const { data = [], isLoading } = useBuildDurationChart()
 
-    if (loading) {
+    if (isLoading) {
         return <CustomSkeleton />
     }
 
