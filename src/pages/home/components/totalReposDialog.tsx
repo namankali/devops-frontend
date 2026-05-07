@@ -13,6 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import { FolderGit, X } from "lucide-react";
+import CustomDialog from "../../../components/customDialog";
 
 type Repo = {
   name: string;
@@ -52,27 +53,9 @@ const getStatusColor = (status: string) => {
 
 const RepoDetailsDialog: React.FC<Props> = ({ open, onClose, repos }) => {
   return (
-    <Dialog
+    <CustomDialog
       open={open}
       onClose={onClose}
-      maxWidth="md"
-      fullWidth
-      PaperProps={{
-        sx: {
-          background:
-            "linear-gradient(145deg, rgba(15,23,42,0.98), rgba(2,8,23,0.98))",
-          color: "#e5e7eb",
-          borderRadius: 4,
-          border: "1px solid #1e293b",
-          boxShadow: "0 30px 100px rgba(0,0,0,0.65)",
-        },
-      }}
-      BackdropProps={{
-        sx: {
-          backgroundColor: "rgba(2, 6, 23, 0.72)",
-          backdropFilter: "blur(8px)",
-        },
-      }}
     >
       <DialogTitle
         sx={{
@@ -201,7 +184,7 @@ const RepoDetailsDialog: React.FC<Props> = ({ open, onClose, repos }) => {
           ))}
         </Grid>
       </DialogContent>
-    </Dialog>
+    </CustomDialog>
   );
 };
 
