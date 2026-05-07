@@ -1,4 +1,5 @@
 import moment from "moment"
+import type { MessagesObj } from "./interfaces"
 
 const formattedDate = (date: string) => {
     return moment(date).format("YYYY-MM-DD")
@@ -14,8 +15,18 @@ const convertDateToMinAndSec = (seconds: string) => {
 }
 
 
+const reverseChats = (data: MessagesObj): MessagesObj => {
+    if (!data?.messages) return data;
+
+    return {
+        ...data,
+        messages: [...data.messages].reverse()
+    };
+};
+
 
 export {
     formattedDate,
-    convertDateToMinAndSec
+    convertDateToMinAndSec,
+    reverseChats
 }

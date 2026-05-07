@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 import Toast from "../utils/toast";
 import type { Login_in } from "../utils/types";
 import type { ApiResponse, BuildChart, BuildRun, LoginResponse, PipelineStats } from "../helper/types";
-import type { MainBranchBuildInfo } from "../helper/interfaces";
+import type { MainBranchBuildInfo, StartConvo } from "../helper/interfaces";
 
 export default class Server {
     static BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3001"
@@ -129,6 +129,57 @@ export default class Server {
         return this.makeRequest<ApiResponse<BuildChart[]>>(
             "get",
             "/api/actions/v1/build/chart"
+        );
+    }
+
+    // Chats
+
+    static async chats(
+        limit: number = 10,
+        offset: number = 0
+    ): Promise<ApiResponse<any>> {
+        return this.makeRequest<ApiResponse<any>>(
+            "get",
+            "/api/chats/v1/stream",
+            {},
+            {
+                limit: limit,
+                offset: offset
+            }
+        );
+    }
+
+    // Start conversation
+    static async start_convo(obj: StartConvo): Promise<any> {
+        return this.makeRequest<any>(
+            "post",
+            "/api/chats/v1/chat",
+            obj
+        )
+    }
+
+    // insert message in convsersation
+    static async new_chat(obj: any): Promise<any> {
+        return this.makeRequest<any>(
+            "patch",
+            "/api/chats/v1/new/message",
+            obj
+        );
+    }
+
+
+    // Dashboard
+    static async dashboard_repo_details_count(): Promise<any> {
+        return this.makeRequest<any>(
+            "get",
+            "/api/actions/v1/dashboard/rd"
+        );
+    }
+    
+    static async dashboard_repo_details(): Promise<any> {
+        return this.makeRequest<any>(
+            "get",
+            "/api/actions/v1/dashboard/repos"
         );
     }
 

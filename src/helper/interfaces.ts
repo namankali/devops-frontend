@@ -22,4 +22,24 @@ export interface JobQueueData {
     jobs: number
 }
 
+export interface SingleMessage {
+    id: number,
+    conversation_id: number,
+    role: string,
+    content: string,
+    status: string,
+    created_at: string,
+    updated_at: string
+}
+
+export interface MessagesObj {
+    conversation_id: number,
+    title: string,
+    messages: SingleMessage[]
+}
+
+export interface StartConvo {
+    message: string
+}
+
 

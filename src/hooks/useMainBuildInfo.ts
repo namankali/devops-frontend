@@ -7,7 +7,6 @@ export const useBuildTable = () => {
         queryKey: ["buildTable"],
         queryFn: async () => {
             const res = await Server.mainBuildBuildInfo()
-            console.log("API Response ->> ", res)
             return res.data ?? []
         },
         initialData: []
