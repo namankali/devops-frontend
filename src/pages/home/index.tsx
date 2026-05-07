@@ -1,4 +1,5 @@
 import type React from "react";
+import { useEffect, useState } from "react";
 import {
     Box,
     Typography,
@@ -26,10 +27,8 @@ import {
 } from "lucide-react";
 
 import { useRepoDetailsCount } from "../../hooks/userRepoDetailsCount";
-import { useEffect, useState } from "react";
 import RepoDetailsDialog from "./components/totalReposDialog";
 import Server from "../../service/Server";
-import CustomSkeleton from "../../components/loader/customSkeleton";
 
 const stats = [
     {
@@ -137,7 +136,21 @@ const activities = [
     },
 ];
 
-const getStatusColor = (status: string) => {
+interface RepoDetails {
+    name: string;
+    type: string;
+    owner: string;
+    branch: string;
+    build: string;
+    prs: number;
+    deploy: string;
+    security: string;
+    activity: string;
+};
+
+const getStatusColor = (
+    status: string
+): "success" | "error" | "warning" | "info" | "default" => {
     switch (status) {
         case "Success":
         case "Low":
@@ -156,16 +169,12 @@ const getStatusColor = (status: string) => {
 };
 
 const Home: React.FC = () => {
-    // const {} = 
-    const { data: rows, isLoading } = useRepoDetailsCount()
-    const [countData, setCountData] = useState(stats)
-    const [repoDialogOpen, setRepoDialogOpen] = useState(false);
-    const [repoDetails, setRepoDetails] = useState([])
-    const [repoLoaded, setRepoLoaded] = useState(false)
+    const { data: rows, isLoading } = useRepoDetailsCount();
 
-    if (isLoading) {
-        return <Skeleton variant="rectangular" height={250} />;
-    }
+    const [countData, setCountData] = useState(stats);
+    const [repoDialogOpen, setRepoDialogOpen] = useState(false);
+    const [repoDetails, setRepoDetails] = useState<RepoDetails[]>([]);
+    const [repoLoaded, setRepoLoaded] = useState(false);
 
     useEffect(() => {
         if (!repoDialogOpen) return;
@@ -186,6 +195,7 @@ const Home: React.FC = () => {
 
         fetchData();
     }, [repoDialogOpen]);
+
     useEffect(() => {
         if (!rows) return;
 
@@ -217,8 +227,8 @@ const Home: React.FC = () => {
         );
     }, [rows]);
 
-    if (repoLoaded) {
-        return <CustomSkeleton />
+    if (isLoading) {
+        return <Skeleton variant="rectangular" height={250} />;
     }
 
     return (
@@ -248,7 +258,10 @@ const Home: React.FC = () => {
                 </Box>
 
                 <Box sx={{ display: "flex", gap: 1 }}>
-                    <Button variant="outlined" sx={{ color: "#e5e7eb", borderColor: "#1e293b" }}>
+                    <Button
+                        variant="outlined"
+                        sx={{ color: "#e5e7eb", borderColor: "#1e293b" }}
+                    >
                         Last 24 hours
                     </Button>
                     <Button variant="outlined" sx={{ minWidth: 44, borderColor: "#1e293b" }}>
@@ -256,14 +269,6 @@ const Home: React.FC = () => {
                     </Button>
                 </Box>
             </Box>
-
-            {/* <Box sx={{ display: "flex", gap: 3, mb: 2 }}>
-                <Typography color="#00d5ff" fontWeight={700}>
-                    All Repositories
-                </Typography>
-                <Typography color="#94a3b8">Personal (7)</Typography>
-                <Typography color="#94a3b8">Organization (11)</Typography>
-            </Box> */}
 
             <Grid container spacing={2} sx={{ mb: 2 }}>
                 {countData.map((item) => {
@@ -273,7 +278,9 @@ const Home: React.FC = () => {
                         <Grid size={{ xs: 12, sm: 6, md: 4, lg: 2 }} key={item.title}>
                             <Card
                                 onClick={() => {
-                                    if (item.title === "Total Repos") setRepoDialogOpen(true);
+                                    if (item.title === "Total Repos") {
+                                        setRepoDialogOpen(true);
+                                    }
                                 }}
                                 sx={{
                                     height: "100%",
@@ -281,6 +288,7 @@ const Home: React.FC = () => {
                                     border: "1px solid #1e293b",
                                     color: "#e5e7eb",
                                     borderRadius: 3,
+                                    cursor: item.title === "Total Repos" ? "pointer" : "default",
                                 }}
                             >
                                 <CardContent>
@@ -305,7 +313,7 @@ const Home: React.FC = () => {
                                             </Typography>
                                             <Typography variant="h4" fontWeight={800}>
                                                 {item.value}
-                                                {item.suffix && (
+                                                {"suffix" in item && item.suffix && (
                                                     <Typography component="span" color="#94a3b8" fontSize={18}>
                                                         {item.suffix}
                                                     </Typography>
@@ -318,7 +326,7 @@ const Home: React.FC = () => {
                                         {item.change}
                                     </Typography>
 
-                                    {item.progress && (
+                                    {"progress" in item && item.progress && (
                                         <LinearProgress
                                             variant="determinate"
                                             value={item.progress}
@@ -443,14 +451,28 @@ const Home: React.FC = () => {
                                                 <Box component="td" sx={{ p: 1.5 }}>
                                                     <Chip size="small" label={repo.type} color="info" />
                                                 </Box>
-                                                <Box component="td" sx={{ p: 1.5 }}>{repo.owner}</Box>
-                                                <Box component="td" sx={{ p: 1.5 }}>{repo.branch}</Box>
                                                 <Box component="td" sx={{ p: 1.5 }}>
-                                                    <Chip size="small" label={repo.build} color={getStatusColor(repo.build)} />
+                                                    {repo.owner}
                                                 </Box>
-                                                <Box component="td" sx={{ p: 1.5 }}>{repo.prs}</Box>
                                                 <Box component="td" sx={{ p: 1.5 }}>
-                                                    <Chip size="small" label={repo.deploy} color={getStatusColor(repo.deploy)} />
+                                                    {repo.branch}
+                                                </Box>
+                                                <Box component="td" sx={{ p: 1.5 }}>
+                                                    <Chip
+                                                        size="small"
+                                                        label={repo.build}
+                                                        color={getStatusColor(repo.build)}
+                                                    />
+                                                </Box>
+                                                <Box component="td" sx={{ p: 1.5 }}>
+                                                    {repo.prs}
+                                                </Box>
+                                                <Box component="td" sx={{ p: 1.5 }}>
+                                                    <Chip
+                                                        size="small"
+                                                        label={repo.deploy}
+                                                        color={getStatusColor(repo.deploy)}
+                                                    />
                                                 </Box>
                                                 <Box component="td" sx={{ p: 1.5 }}>
                                                     <Chip
@@ -459,7 +481,9 @@ const Home: React.FC = () => {
                                                         color={getStatusColor(repo.security)}
                                                     />
                                                 </Box>
-                                                <Box component="td" sx={{ p: 1.5 }}>{repo.activity}</Box>
+                                                <Box component="td" sx={{ p: 1.5 }}>
+                                                    {repo.activity}
+                                                </Box>
                                             </Box>
                                         ))}
                                     </Box>
@@ -575,6 +599,7 @@ const Home: React.FC = () => {
                 open={repoDialogOpen}
                 onClose={() => setRepoDialogOpen(false)}
                 repos={repoDetails}
+                // loading={repoLoaded}
             />
         </Box>
     );
