@@ -12,5 +12,4 @@ const useBuildDurationChart = () => {
   });
 };
 
-export default useBuildDurationChart;
-
+export default useBuildDurationChart
