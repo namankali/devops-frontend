@@ -13,4 +13,3 @@ const useBuildDurationChart = () => {
 };
 
 export default useBuildDurationChart
-
