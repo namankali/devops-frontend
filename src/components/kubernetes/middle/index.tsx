@@ -29,7 +29,7 @@ const MiddleKubernetesSection: React.FC = () => {
         }) ?? []
 
         const gridRows = resourceData?.rows?.map((row: any, index: number) => {
-            if (row.hasOwnProperty("created")) {
+            if (row.created) {
                 row["created"] = formattedDate(row["created"])
             }
 

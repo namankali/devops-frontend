@@ -26,7 +26,7 @@ const reverseChats = (data: MessagesObj): MessagesObj => {
 };
 
 const filteredPodDetails = (data: PodDetails): PodOverview => {
-    const filtered_value = {} as PodOverview
+    let filtered_value = {} as PodOverview
 
     for (let key in data) {
         if (key !== "cpu_usage" && key !== "memory_usage" && key !== "yaml") {
