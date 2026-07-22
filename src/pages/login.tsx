@@ -42,7 +42,6 @@ const Login: React.FC = () => {
   const submitHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      console.log("form", form);
       const login_in_call = await Server.signin(form)
       if (login_in_call.success) {
         setIsAuthenticated(true)

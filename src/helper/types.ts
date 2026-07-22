@@ -31,3 +31,18 @@ export type PipelineStats = {
     total_builds: number;
     failed_builds: number;
 };
+
+export type PodDetails = {
+    name: string,
+    namespace: string,
+    node: string,
+    status: string,
+    ip: string,
+    created: string,
+    age: string,
+    cpu_usage: string,
+    memory_usage: string,
+    yaml: string
+}
+
+export type PodOverview = Omit<PodDetails, "cpu_usage" | "memory_usage" | "yaml">

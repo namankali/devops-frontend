@@ -10,9 +10,6 @@ import React from "react";
 const BuildRunGrid: React.FC = () => {
     const { data, isLoading } = useBuildRunsInfo()
 
-    // console.log("dataaaaa", data)
-
-
     const colorMap: Record<BuildStatus, string> = {
         success: "#16a34a",
         failed: "#dc2626",

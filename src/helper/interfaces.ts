@@ -42,4 +42,11 @@ export interface StartConvo {
     message: string
 }
 
+export interface KubernetesStats{
+    title: string,
+    value: number,
+    sub_value: number,
+    color: string,
+    icon: any
+}
 

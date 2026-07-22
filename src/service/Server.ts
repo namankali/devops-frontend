@@ -6,7 +6,8 @@ import type { ApiResponse, BuildChart, BuildRun, LoginResponse, PipelineStats } 
 import type { MainBranchBuildInfo, StartConvo } from "../helper/interfaces";
 
 export default class Server {
-    static BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3001"
+    // static BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3001"
+    static BASE_URL = ""
     static onLogout: (() => void) | null = null;
     static refreshPromise: Promise<any> | null = null
 
@@ -23,7 +24,6 @@ export default class Server {
         hasRetried: boolean = false
     ): Promise<T> {
         try {
-            console.log("API Call =>>", endpoint, new Date().toString());
             const access_token = Cookies.get("x-access-token")
 
             const response = await axios({
@@ -175,7 +175,7 @@ export default class Server {
             "/api/actions/v1/dashboard/rd"
         );
     }
-    
+
     static async dashboard_repo_details(): Promise<any> {
         return this.makeRequest<any>(
             "get",
@@ -183,5 +183,44 @@ export default class Server {
         );
     }
 
+    // Kubernetes
+    static async kubernetesInfo(namespace = "default"): Promise<any> {
+        return this.makeRequest<any>(
+            "get",
+            `/api/kubernetes/v1/info/${namespace}`,
+            {},
+            {
+                "pods": "true",
+                "deployments": "true",
+                "nodes": "true",
+                "services": "true",
+                "clusters": "true",
+            }
+        )
+    }
 
-}   
+    static async namespacesInfo(): Promise<any> {
+        return this.makeRequest<any>(
+            "get",
+            "/api/kubernetes/v1/ns",
+        )
+    }
+
+    static async resourcesDetails(resource: string, namespace: string): Promise<any> {
+        return this.makeRequest<any>(
+            "get",
+            `/api/kubernetes/v1/resources/${resource}`,
+            {},
+            {
+                namespace
+            }
+        )
+    }
+
+    static fetchResourceSpecificDetails(resourceName: string, namespace: string, type: string): Promise<any> {
+        return this.makeRequest<any>(
+            "get",
+            `/api/kubernetes/v1/resource/detail/${resourceName}/${type}/${namespace}`
+        )
+    }
+}

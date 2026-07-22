@@ -1,8 +1,9 @@
 import moment from "moment"
 import type { MessagesObj } from "./interfaces"
+import type { PodDetails, PodOverview } from "./types"
 
 const formattedDate = (date: string) => {
-    return moment(date).format("YYYY-MM-DD")
+    return moment(date).local().format("YYYY-MM-DD")
 }
 
 const convertDateToMinAndSec = (seconds: string) => {
@@ -24,9 +25,23 @@ const reverseChats = (data: MessagesObj): MessagesObj => {
     };
 };
 
+const filteredPodDetails = (data: PodDetails): PodOverview => {
+    const filtered_value = {} as PodOverview
+
+    for (let key in data) {
+        if (key !== "cpu_usage" && key !== "memory_usage" && key !== "yaml") {
+            // filtered_value[key as keyof PodOverview] = data[key as keyof PodDetails]
+            filtered_value[key] = data[key]
+        }
+    }
+
+    return filtered_value
+}
+
 
 export {
     formattedDate,
     convertDateToMinAndSec,
-    reverseChats
+    reverseChats,
+    filteredPodDetails
 }

@@ -11,7 +11,6 @@ const AssitantInput: React.FC<Props> = ({ onSend }) => {
     const [value, setValue] = useState("")
 
     const submitMessageHandler = () => {
-        console.log("submitted clicked!!!!", value)
         if (!value.trim()) return;
 
         onSend(value)

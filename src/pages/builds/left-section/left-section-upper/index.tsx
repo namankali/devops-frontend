@@ -10,6 +10,7 @@ const Left_section_upper: React.FC = () => {
             sx={{
                 flex: 2,
                 display: "flex",
+                minHeight: 0,
                 gap: 1
             }}
         >
@@ -27,7 +28,9 @@ const Left_section_upper: React.FC = () => {
             </Box>
             <Box
                 sx={{
-                    flex: 1
+                    flex: 1,
+                    minHeight: 0,
+                    overflowY: "auto"
                 }}
             >
                 <BuildRunGrid />

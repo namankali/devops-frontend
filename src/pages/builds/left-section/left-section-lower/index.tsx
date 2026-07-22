@@ -1,17 +1,11 @@
 import { Box } from "@mui/system";
 import type React from "react";
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, useTheme } from "@mui/material";
-import type { BuildStatus } from "../../../../helper/types";
 import { useBuildTable } from "../../../../hooks/useMainBuildInfo";
 import type { MainBranchBuildInfo } from "../../../../helper/interfaces";
 import { convertDateToMinAndSec } from "../../../../helper/format";
 import CustomSkeleton from "../../../../components/loader/customSkeleton";
-
-const getStatusColor = (state: BuildStatus) => {
-    if (state === "success") return "#22c55e"
-    else if (state === "failed") return "#ef4444"
-    else return "#9ca3af"
-}
+import { StatusIndicator } from "../../../../components/statusIndicator";
 
 
 const LeftSectionLower: React.FC = () => {
@@ -72,7 +66,11 @@ const LeftSectionLower: React.FC = () => {
                                         backgroundColor: theme.palette.primary.main
                                     }
                                 }}>
-                                <TableCell><Box sx={{ width: 10, height: 10, borderRadius: "50%", backgroundColor: getStatusColor(row.state) }} /></TableCell>
+                                <TableCell>
+                                    <StatusIndicator
+                                        state={row.state}
+                                    />
+                                </TableCell>
 
                                 <TableCell
                                     sx={{

@@ -6,7 +6,6 @@ export const useRepoDetailsCount = () => {
         queryKey: ["repo_count"],
         queryFn: async () => {
             const res = await Server.dashboard_repo_details_count()
-            console.log("check api dtaa", res)
             return res.data ?? []
         },
         initialData: []

@@ -7,7 +7,8 @@ const NavBar: React.FC = () => {
     const tabs = [
         "dashboard",
         "builds",
-        "lv",
+        // "lv",
+        "kubernetes",
         "assistant",
         "actions"
     ]
