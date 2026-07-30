@@ -1,52 +1,111 @@
-import { Button, FormControl, InputLabel, MenuItem, Select, type SelectChangeEvent } from "@mui/material"
-import { Box, Grid } from "@mui/system"
+import { Button, Typography, type SelectChangeEvent } from "@mui/material"
+import { Box, Grid, useTheme } from "@mui/system"
 import CustomCard from "../../../pages/home/components/customCards"
-import { useQueryClient } from "@tanstack/react-query"
+import { CustomSelect } from "../../customSelect"
+import { useState } from "react"
+import { remove_undescore, UpperCaseFirstLetter } from "../../../helper/format"
 
 
 
 interface _UpperKubernetesSection {
     namespace: string,
     setNamespace: any,
+    provider: string,
+    setProvider: any,
+    environment: string,
+    setEnvironment: any,
+    environments: string[],
     namespaces: any,
     setNamespaces: any,
+    providers: string[]
     kubeInfo: any,
-    refetch: any
+    refetch: any,
+    handleApplyHandler: any,
+    cluster_name: string,
+    registerationHandler: any,
+    isNamespaceDisabled: boolean
+    setIsNamespaceDisabled: any,
+    setIsEnvironmentDisabled: any,
+    isEnvironmentDisabled: boolean,
+    selectedProvider: string
 }
 
-const UpperKubernetesSection: React.FC<_UpperKubernetesSection> = ({ namespace, setNamespace, namespaces, kubeInfo, refetch }) => {
-    const queryClient = useQueryClient()
+const UpperKubernetesSection: React.FC<_UpperKubernetesSection> = ({
+    namespace,
+    setNamespace,
+    namespaces,
+    environments,
+    provider,
+    setProvider,
+    environment,
+    setEnvironment,
+    providers,
+    kubeInfo,
+    handleApplyHandler,
+    refetch,
+    cluster_name,
+    registerationHandler,
+    isNamespaceDisabled,
+    setIsNamespaceDisabled,
+    isEnvironmentDisabled,
+    setIsEnvironmentDisabled,
+    selectedProvider
+}) => {
+    const [isApplyDisabled, setIsApplyDisabled] = useState(true);
+    const handleProviderChange = (e: SelectChangeEvent) => {
+        const provider = e.target.value
+
+        // const filteredProvider = providers.find((obj)=> obj?.display_name === provider)
+
+        setProvider(provider)
+
+        setNamespace("")
+        setEnvironment("")
+
+        setIsEnvironmentDisabled(false)
+    }
+
+    const handleEnvironmentChange = (e: SelectChangeEvent) => {
+        const environment = e.target.value
+
+        setEnvironment(environment)
+        setNamespace("")
+        // setIsNamespaceDisabled(false)
+    }
+
     const handleNamespaceChange = (e: SelectChangeEvent) => {
         const ns = e.target.value
 
         setNamespace(ns)
-        queryClient.invalidateQueries({
-            queryKey: ["kuberentes_resources"]
-        })
+
+        setIsApplyDisabled(false)
     }
 
     const handleRefresh = () => {
         refetch()
     }
 
+    const theme = useTheme()
+
     return (
-        <Box sx={{ flex: 1 }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <Box
                 sx={{
                     display: "flex",
                     justifyContent: "space-between",
-                    gap: 2,
                     alignItems: "center",
-                    flexWrap: "wrap"
+                    flexWrap: "wrap",
+                    gap: 2,
                 }}
             >
-                <Box>Kubernetes Cluster</Box>
+                <Typography variant="h6" color={theme.palette.text.primary} fontWeight="bold">{UpperCaseFirstLetter(cluster_name)} ({remove_undescore(selectedProvider)})</Typography>
                 <Box sx={{
                     mr: "4dvh",
                     display: "flex",
-                    justifyContent: "space-evenly",
+                    justifyContent: "space-between",
                     alignItems: "center",
-                    width: "30dvh"
+                    gap: 2
+                    // width: "30dvh"
                 }}>
                     <Box
                         sx={{
@@ -55,47 +114,48 @@ const UpperKubernetesSection: React.FC<_UpperKubernetesSection> = ({ namespace, 
                             alignItems: "center"
                         }}
                     >
-                        <FormControl
-                            size="small"
-                            sx={{
-                                minWidth: 180,
-                                bgcolor: "#1e293b",
-                                borderRadius: 1
-                            }}
-                        >
-                            <InputLabel sx={{ color: "#94a3b8" }}> Namespace</InputLabel>
-
-                            <Select
-                                value={namespace}
-                                label="Namespace"
-                                onChange={handleNamespaceChange}
-                                sx={{
-                                    color: "white",
-
-                                    ".MuiOutlinedInput-notchedOutline": {
-                                        borderColor: "#334155",
-                                    },
-
-                                    "&:hover .MuiOutlinedInput-notchedOutline": {
-                                        borderColor: "#475569",
-                                    },
-
-                                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                                        borderColor: "#2575fc",
-                                    },
-
-                                    ".MuiSvgIcon-root": {
-                                        color: "white",
-                                    },
-                                }}
-                            >
-                                <MenuItem value="all">All</MenuItem>
-                                {namespaces.map((obj) => (
-                                    <MenuItem value={obj.name} key={obj.name}>{obj.name}</MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
+                        <CustomSelect
+                            value={provider}
+                            handleChange={handleProviderChange}
+                            menuItems={providers}
+                            label="Provider"
+                        />
+                        <CustomSelect
+                            value={environment}
+                            handleChange={handleEnvironmentChange}
+                            menuItems={environments}
+                            label="Environment"
+                            disabled={isEnvironmentDisabled}
+                        />
+                        <CustomSelect
+                            value={namespace}
+                            handleChange={handleNamespaceChange}
+                            menuItems={namespaces}
+                            purpose="ns"
+                            label="Namespace"
+                            disabled={isNamespaceDisabled}
+                        />
                     </Box>
+                    <Button
+                        variant="contained"
+                        disabled={isApplyDisabled}
+                        sx={{
+                            py: 1.2,
+                            background: "linear-gradient(45deg, #6a11cb, #2575fc)",
+                            color: "white",
+                            fontWeight: "bold",
+                            cursor: isApplyDisabled ? "not-allowed" : "pointer",
+
+                            "&:disabled": {
+                                cursor: "not-allowed",
+                                background: "#475569",
+                                color: "#94a3b8",
+                            },
+                        }}
+                        onClick={handleApplyHandler}
+                    >
+                        Apply
+                    </Button>
                     <Button
                         variant="contained"
                         sx={{
@@ -107,6 +167,18 @@ const UpperKubernetesSection: React.FC<_UpperKubernetesSection> = ({ namespace, 
                         onClick={handleRefresh}
                     >
                         Refresh
+                    </Button>
+                    <Button
+                        variant="contained"
+                        sx={{
+                            py: 1.2,
+                            background: "linear-gradient(45deg, #6a11cb, #2575fc)",
+                            color: "white",
+                            fontWeight: "bold",
+                        }}
+                        onClick={registerationHandler}
+                    >
+                        Register New Cluster
                     </Button>
                 </Box>
             </Box>

@@ -1,10 +1,11 @@
-import { Box } from "@mui/system"
+import { Box, useTheme } from "@mui/system"
 import type React from "react"
 import Build_failure from "../../../../components/build-failures"
 import Pipeline_runs from "../../../../components/pipeline-runs"
 import BuildRunGrid from "../../../../components/buildRunsGrid"
 
 const Left_section_upper: React.FC = () => {
+    const theme = useTheme()
     return (
         <Box
             sx={{
@@ -30,7 +31,29 @@ const Left_section_upper: React.FC = () => {
                 sx={{
                     flex: 1,
                     minHeight: 0,
-                    overflowY: "auto"
+                    overflowY: "auto",
+
+
+                    "&::-webkit-scrollbar": {
+                        width: 8,
+                    },
+
+                    "&::-webkit-scrollbar-track": {
+                        background: theme.palette.background.default,
+                        borderRadius: 8,
+                    },
+
+                    "&::-webkit-scrollbar-thumb": {
+                        background: theme.palette.primary.main,
+                        borderRadius: 8,
+                    },
+
+                    "&::-webkit-scrollbar-thumb:hover": {
+                        background: theme.palette.primary.dark,
+                    },
+
+                    scrollbarWidth: "thin",
+                    scrollbarColor: `${theme.palette.primary.main} ${theme.palette.background.default}`,
                 }}
             >
                 <BuildRunGrid />

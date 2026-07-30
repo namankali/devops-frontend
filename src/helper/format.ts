@@ -38,10 +38,61 @@ const filteredPodDetails = (data: PodDetails): PodOverview => {
     return filtered_value
 }
 
+const reducedPodDetails = (data: any) => {
+    let running_pods = 0
+    let pending_pods = 0
+    let failed_pods = 0
+    let succeeded_pods = 0
+
+    data?.forEach((obj: any) => {
+        if (obj.status === "Running") {
+            running_pods += 1
+        } else if (obj.status === "Pending") {
+            pending_pods += 1
+        } else if (obj.status === "Failed") {
+            failed_pods += 1
+        } else {
+            succeeded_pods += 1
+        }
+    })
+
+    return [
+        { name: "Running", value: running_pods, color: "#22c55e" },
+        { name: "Pending", value: pending_pods, color: "#f59e0b" },
+        { name: "Failed", value: failed_pods, color: "#ef4444" },
+        { name: "Succeeded", value: succeeded_pods, color: "#3b82f6" },
+    ];
+}
+
+const remove_undescore = (text: string) => {
+    if (text) {
+        return text.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase())
+    }
+    return text
+}
+
+const UpperCaseFirstLetter = (text: string) => {
+    if (text) {
+        return text.replace(/\b\w/g, c => c.toUpperCase())
+    }
+    return text
+}
+
+const add_undescore = (text: string) => {
+    if (text) {
+        return text.replace(/ /g, "_").replace(/\b\w/g, c => c.toUpperCase())
+    }
+    return text
+}
+
 
 export {
     formattedDate,
     convertDateToMinAndSec,
     reverseChats,
-    filteredPodDetails
+    filteredPodDetails,
+    reducedPodDetails,
+    remove_undescore,
+    add_undescore,
+    UpperCaseFirstLetter
 }

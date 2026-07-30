@@ -41,12 +41,15 @@ export default class Server {
             return response.data
         } catch (error: any) {
             if (!error.response) {
-                Toast.error("Backend server is not reachable")
+                // Toast.error("Backend server is not reachable")
                 throw error
             }
 
             const status = error.response.status;
-            const message = error?.response?.data?.message.toLowerCase() || ""
+            const message =
+                error.response?.data?.message ??
+                error.response?.data?.error?.payload?.message ??
+                "Something went wrong";
 
             const isRefreshing = endpoint === "/users/refresh"
 
@@ -87,8 +90,8 @@ export default class Server {
                 }
             }
             throw error.response?.data || {
-                message: "Something went wrong",
-                status: 500,
+                message,
+                status
             };
         }
     }
@@ -184,10 +187,25 @@ export default class Server {
     }
 
     // Kubernetes
-    static async kubernetesInfo(namespace = "default"): Promise<any> {
+    static async registerKubernetes(data: FormData): Promise<any> {
+        console.log("data before api call", data)
+        return this.makeRequest<any>(
+            "post",
+            "/api/kubernetes/v1/register/cluster",
+            data
+        )
+    }
+    static async registerationInfo(): Promise<any> {
         return this.makeRequest<any>(
             "get",
-            `/api/kubernetes/v1/info/${namespace}`,
+            "/api/kubernetes/v1/clusters",
+        )
+    }
+
+    static async kubernetesInfo(namespace = "default", provider: string, environment: string): Promise<any> {
+        return this.makeRequest<any>(
+            "get",
+            `/api/kubernetes/v1/info/${namespace}/${provider}/${environment}`,
             {},
             {
                 "pods": "true",
@@ -199,28 +217,83 @@ export default class Server {
         )
     }
 
-    static async namespacesInfo(): Promise<any> {
+    static async namespacesInfo(provider?: string, env?: string): Promise<any> {
         return this.makeRequest<any>(
             "get",
             "/api/kubernetes/v1/ns",
+            {},
+            {
+                ...(provider && { provider }),
+                ...(env && { env })
+            }
         )
     }
 
-    static async resourcesDetails(resource: string, namespace: string): Promise<any> {
+    static async resourcesDetails(resource: string, namespace: string, provider: string, environment: string): Promise<any> {
         return this.makeRequest<any>(
             "get",
             `/api/kubernetes/v1/resources/${resource}`,
             {},
             {
-                namespace
+                namespace,
+                provider,
+                environment
             }
         )
     }
 
-    static fetchResourceSpecificDetails(resourceName: string, namespace: string, type: string): Promise<any> {
+    static fetchResourceSpecificDetails(
+        resourceName: string,
+        namespace: string,
+        type: string,
+        provider: string,
+        environment: string
+    ): Promise<any> {
         return this.makeRequest<any>(
             "get",
-            `/api/kubernetes/v1/resource/detail/${resourceName}/${type}/${namespace}`
+            `/api/kubernetes/v1/resource/detail/${resourceName}/${type}/${namespace}`,
+            {},
+            {
+                provider,
+                environment
+            }
+        )
+    }
+
+    static kubernetesEventsDetails(namespace: string): Promise<any> {
+        return this.makeRequest<any>(
+            "get",
+            `/api/kubernetes/v1/events/${namespace}`
+        )
+    }
+    static kubernetesDefaultCluster(): Promise<any> {
+        return this.makeRequest<any>(
+            "get",
+            `/api/kubernetes/v1/curr/cluster`
+        )
+    }
+
+    static podUsage(namespace: string = "all"): Promise<any> {
+        return this.makeRequest<any>(
+            "get",
+            `/api/kubernetes/v1/pods/usage/${namespace}`
+        )
+    }
+
+    static providerEnvironmentInfo(provider?: string): Promise<any> {
+        return this.makeRequest<any>(
+            "get",
+            `/api/kubernetes/v1/prov/env`,
+            {},
+            {
+                ...(provider && { provider })
+            }
+        )
+    }
+    static environmentInfo(): Promise<any> {
+        return this.makeRequest<any>(
+            "get",
+            `/api/kubernetes/v1/envs`,
         )
     }
 }

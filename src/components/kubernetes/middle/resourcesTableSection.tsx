@@ -10,13 +10,15 @@ interface Props {
 const ResourcesTableSection: React.FC<Props> = ({ rows, columns, isLoading }) => {
     const theme = useTheme()
     const { selectedResource, setSelectedItem, selectedItem } = KubernetesStore()
-    console.log("rows", rows, "columns", columns)
     const rowClickHandler = (params: GridRowParams) => {
         setSelectedItem(params.row)
-
     }
+
     return (
-        <Card sx={{ height: "100%", backgroundColor: "transparent" }}>
+        <Card sx={{
+            height: "100%",
+            backgroundColor: "transparent"
+        }}>
             <CardContent>
                 <Box
                     display="flex"
@@ -39,17 +41,18 @@ const ResourcesTableSection: React.FC<Props> = ({ rows, columns, isLoading }) =>
                         loading={isLoading}
                         onRowClick={rowClickHandler}
                         // disableRowSelectionOnClick
-                        pageSizeOptions={[10, 25, 50]}
+                        pageSizeOptions={[10, 15, 25]}
                         initialState={{
                             pagination: {
                                 paginationModel: {
-                                    pageSize: 10
+                                    pageSize: 6
                                 }
                             }
                         }}
                         sx={{
                             border: 0,
                             backgroundColor: "transparent",
+                            cursor: "pointer",
 
                             "& .MuiDataGrid-columnHeaders": {
                                 backgroundColor: "background.paper",

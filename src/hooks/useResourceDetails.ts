@@ -5,7 +5,9 @@ import Server from "../service/Server";
 export const useResourceDetails = (
     name?: string,
     namespace?: string,
-    resource?: string
+    resource?: string,
+    provider?: string,
+    environment?: string
 ) => {
     return useQuery({
         queryKey: ["resource-details", resource, namespace, name],
@@ -14,9 +16,11 @@ export const useResourceDetails = (
                 name!,
                 namespace!,
                 resource!,
+                provider,
+                environment
             );
             return res.data;
         },
-        enabled: !!name && !!namespace && !!resource, // only run when all exist
+        enabled: !!name && !!namespace && !!resource && !!provider && !!environment,
     });
 };

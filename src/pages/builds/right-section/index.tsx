@@ -10,6 +10,7 @@ const RightSection: React.FC = () => {
             flex: 1,
             display: "flex",
             flexDirection: "column",
+            gap: 1
             // backgroundColor: theme.palette.background.paper
         }}
     >

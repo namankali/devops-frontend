@@ -33,8 +33,30 @@ const LeftSectionLower: React.FC = () => {
             <TableContainer
                 component={Paper}
                 sx={{
-                    maxHeight: 260,
+                    maxHeight: "25dvh",
                     backgroundColor: theme.palette.background.paper,
+
+                    "&::-webkit-scrollbar": {
+                        width: 8,
+                    },
+
+                    "&::-webkit-scrollbar-track": {
+                        background: theme.palette.background.default,
+                        borderRadius: 8,
+                    },
+
+                    "&::-webkit-scrollbar-thumb": {
+                        background: theme.palette.primary.main,
+                        borderRadius: 8,
+                    },
+
+                    "&::-webkit-scrollbar-thumb:hover": {
+                        background: theme.palette.primary.dark,
+                    },
+
+                    // Firefox
+                    scrollbarWidth: "thin",
+                    scrollbarColor: `${theme.palette.primary.main} ${theme.palette.background.default}`,
 
                 }}
             >

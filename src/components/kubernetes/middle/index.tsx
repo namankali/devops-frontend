@@ -7,11 +7,17 @@ import { KubernetesStore } from "../../../helper/useKubernetesStore"
 import type { GridColDef } from "@mui/x-data-grid"
 import ResourceDetails from "./resourceDetails"
 import { formattedDate } from "../../../helper/format"
+import CustomSkeleton from "../../customSkeleton"
 
 const MiddleKubernetesSection: React.FC = () => {
-    const { selectedResource, selectedNamespace } = KubernetesStore()
-    const { data: resourceData, isLoading } = useResources(selectedResource, selectedNamespace)
+    const { selectedResource, selectedNamespace, selectedProvider, selectedEnvironment } = KubernetesStore()
 
+    const { data: resourceData, isLoading } = useResources(
+        selectedResource,
+        selectedNamespace,
+        selectedProvider,
+        selectedEnvironment
+    )
 
     const [columns, setColumns] = useState([])
     const [rows, setRows] = useState([])
@@ -43,9 +49,13 @@ const MiddleKubernetesSection: React.FC = () => {
         setRows(gridRows)
     }, [resourceData])
 
+    if (isLoading) {
+        return <CustomSkeleton />
+    }
+
     return (
         <Grid
-            container spacing={2} sx={{ mb: 2 }}
+            container spacing={2} sx={{ mb: 1 }}
         >
             <Grid size={{ xs: 12, lg: 3 }}><ResourcesSidebar /></Grid>
             <Grid size={{ xs: 12, lg: 5 }}>

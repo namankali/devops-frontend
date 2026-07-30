@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import type { Environment } from "./types";
 
 type Resource =
   | "pods"
@@ -24,16 +25,25 @@ interface KubernetesStore {
   selectedResource: Resource;
   selectedNamespace: string;
   selectedItem: SelectedItem | null;
+  selectedProvider: string
+  selectedEnvironment: Environment
+  selectedDisplayName: string
 
   setSelectedResource: (resource: Resource) => void;
   setSelectedNamespace: (namespace: string) => void;
   setSelectedItem: (item: SelectedItem | null) => void;
+  setSelectedProvider: (provider: string) => void
+  setSelectedEnvironment: (env: Environment) => void
+  setSelectedDisplayName: (ds: string) => void
 }
 
 export const KubernetesStore = create<KubernetesStore>((set) => ({
   selectedResource: "pods",
-  selectedNamespace: "default",
+  selectedNamespace: "all",
   selectedItem: null,
+  selectedProvider: "",
+  selectedEnvironment: null,
+  selectedDisplayName: "",
 
   setSelectedResource: (resource) =>
     set({
@@ -51,4 +61,16 @@ export const KubernetesStore = create<KubernetesStore>((set) => ({
     set({
       selectedItem: item,
     }),
+
+  setSelectedProvider: (provider) => set({
+    selectedProvider: provider
+  }),
+
+  setSelectedEnvironment: (env) => set({
+    selectedEnvironment: env
+  }),
+
+  setSelectedDisplayName: (ds) => set({
+    selectedDisplayName: ds
+  })
 }));

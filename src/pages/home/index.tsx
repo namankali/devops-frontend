@@ -178,7 +178,7 @@ const Home: React.FC = () => {
     const [repoLoaded, setRepoLoaded] = useState(false);
 
     useEffect(() => {
-        if (!repoDialogOpen) return;
+        // if (!repoDialogOpen) return;
 
         const fetchData = async () => {
             try {
@@ -195,7 +195,10 @@ const Home: React.FC = () => {
         };
 
         fetchData();
-    }, [repoDialogOpen]);
+    },
+        []
+        // [repoDialogOpen]
+    );
 
     useEffect(() => {
         if (!rows) return;
@@ -240,6 +243,9 @@ const Home: React.FC = () => {
                 background:
                     "radial-gradient(circle at top left, #10233f 0%, #07111f 38%, #050b14 100%)",
                 p: { xs: 2, md: 3 },
+                display: "flex",
+                flexDirection: "column",
+                overflow: "hidden"
             }}
         >
             <Box
@@ -250,6 +256,7 @@ const Home: React.FC = () => {
                     alignItems: "center",
                     mb: 3,
                     flexWrap: "wrap",
+                    flex: 1
                 }}
             >
                 <Box>
@@ -271,336 +278,339 @@ const Home: React.FC = () => {
                 </Box>
             </Box>
 
-            <Grid container spacing={2} sx={{ mb: 2 }}>
-                {countData.map((item) => {
-                    const Icon = item.icon;
+            <Box sx={{flex: 2}}>
+                <Grid container spacing={2} sx={{ mb: 2 }}>
+                    {countData.map((item) => {
+                        const Icon = item.icon;
 
-                    return (
-                        <Grid size={{ xs: 12, sm: 6, md: 4, lg: 2 }} key={item.title}>
-                            <Card
-                                onClick={() => {
-                                    if (item.title === "Total Repos") {
-                                        setRepoDialogOpen(true);
-                                    }
-                                }}
-                                sx={{
-                                    height: "100%",
-                                    background: "rgba(15, 23, 42, 0.8)",
-                                    border: "1px solid #1e293b",
-                                    color: "#e5e7eb",
-                                    borderRadius: 3,
-                                    cursor: item.title === "Total Repos" ? "pointer" : "default",
-                                }}
-                            >
-                                <CardContent>
-                                    <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-                                        <Box
-                                            sx={{
-                                                width: 48,
-                                                height: 48,
-                                                borderRadius: 2,
-                                                display: "grid",
-                                                placeItems: "center",
-                                                background: `${item.color}22`,
-                                                color: item.color,
-                                            }}
-                                        >
-                                            <Icon size={28} />
-                                        </Box>
-
-                                        <Box>
-                                            <Typography color="#94a3b8" fontSize={14}>
-                                                {item.title}
-                                            </Typography>
-                                            <Typography variant="h4" fontWeight={800}>
-                                                {item.value}
-                                                {"suffix" in item && item.suffix && (
-                                                    <Typography component="span" color="#94a3b8" fontSize={18}>
-                                                        {item.suffix}
-                                                    </Typography>
-                                                )}
-                                            </Typography>
-                                        </Box>
-                                    </Box>
-
-                                    <Typography color="#22c55e" fontSize={13} mt={1}>
-                                        {item.change}
-                                    </Typography>
-
-                                    {"progress" in item && item.progress && (
-                                        <LinearProgress
-                                            variant="determinate"
-                                            value={item.progress}
-                                            sx={{ mt: 1.5, height: 6, borderRadius: 99 }}
-                                        />
-                                    )}
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                    );
-                })}
-            </Grid>
-
-            <Grid container spacing={2}>
-                <Grid size={{ xs: 12, lg: 8 }}>
-                    <Card
-                        sx={{
-                            background: "rgba(15, 23, 42, 0.8)",
-                            border: "1px solid #1e293b",
-                            color: "#e5e7eb",
-                            borderRadius: 3,
-                            mb: 2,
-                        }}
-                    >
-                        <CardContent>
-                            <Typography variant="h6" fontWeight={800} mb={2}>
-                                Repository Activity{" "}
-                                <Typography component="span" color="#94a3b8">
-                                    (Last 7 Days)
-                                </Typography>
-                            </Typography>
-
-                            <Box
-                                sx={{
-                                    height: 220,
-                                    borderRadius: 2,
-                                    border: "1px dashed #334155",
-                                    display: "grid",
-                                    placeItems: "center",
-                                    color: "#94a3b8",
-                                }}
-                            >
-                                Chart Placeholder
-                            </Box>
-                        </CardContent>
-                    </Card>
-
-                    <Card
-                        sx={{
-                            background: "rgba(15, 23, 42, 0.8)",
-                            border: "1px solid #1e293b",
-                            color: "#e5e7eb",
-                            borderRadius: 3,
-                        }}
-                    >
-                        <CardContent>
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    gap: 2,
-                                    mb: 2,
-                                    flexWrap: "wrap",
-                                }}
-                            >
-                                <Typography variant="h6" fontWeight={800}>
-                                    Repository Overview
-                                </Typography>
-
-                                <TextField
-                                    size="small"
-                                    placeholder="Search repositories..."
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <Search size={18} color="#94a3b8" />
-                                            </InputAdornment>
-                                        ),
+                        return (
+                            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 2 }} key={item.title}>
+                                <Card
+                                    onClick={() => {
+                                        if (item.title === "Total Repos") {
+                                            setRepoDialogOpen(true);
+                                        }
                                     }}
                                     sx={{
-                                        input: { color: "#e5e7eb" },
-                                        "& fieldset": { borderColor: "#1e293b" },
+                                        height: "100%",
+                                        background: "rgba(15, 23, 42, 0.8)",
+                                        border: "1px solid #1e293b",
+                                        color: "#e5e7eb",
+                                        borderRadius: 3,
+                                        cursor: item.title === "Total Repos" ? "pointer" : "default",
                                     }}
-                                />
-                            </Box>
+                                >
+                                    <CardContent>
+                                        <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+                                            <Box
+                                                sx={{
+                                                    width: 48,
+                                                    height: 48,
+                                                    borderRadius: 2,
+                                                    display: "grid",
+                                                    placeItems: "center",
+                                                    background: `${item.color}22`,
+                                                    color: item.color,
+                                                }}
+                                            >
+                                                <Icon size={28} />
+                                            </Box>
 
-                            <Box sx={{ overflowX: "auto" }}>
-                                <Box component="table" sx={{ width: "100%", borderCollapse: "collapse" }}>
-                                    <Box component="thead">
-                                        <Box component="tr" sx={{ color: "#94a3b8", textAlign: "left" }}>
-                                            {[
-                                                "Repository",
-                                                "Type",
-                                                "Owner / Org",
-                                                "Branch",
-                                                "Build",
-                                                "Open PRs",
-                                                "Deploy",
-                                                "Security",
-                                                "Activity",
-                                            ].map((head) => (
-                                                <Box component="th" key={head} sx={{ p: 1.5, fontSize: 13 }}>
-                                                    {head}
+                                            <Box>
+                                                <Typography color="#94a3b8" fontSize={14}>
+                                                    {item.title}
+                                                </Typography>
+                                                <Typography variant="h4" fontWeight={800}>
+                                                    {item.value}
+                                                    {"suffix" in item && item.suffix && (
+                                                        <Typography component="span" color="#94a3b8" fontSize={18}>
+                                                            {item.suffix}
+                                                        </Typography>
+                                                    )}
+                                                </Typography>
+                                            </Box>
+                                        </Box>
+
+                                        <Typography color="#22c55e" fontSize={13} mt={1}>
+                                            {item.change}
+                                        </Typography>
+
+                                        {"progress" in item && item.progress && (
+                                            <LinearProgress
+                                                variant="determinate"
+                                                value={item.progress}
+                                                sx={{ mt: 1.5, height: 6, borderRadius: 99 }}
+                                            />
+                                        )}
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                        );
+                    })}
+                </Grid>
+
+                <Grid container spacing={2}>
+                    <Grid size={{ xs: 12, lg: 8 }} >
+                        <Card
+                            sx={{
+                                background: "rgba(15, 23, 42, 0.8)",
+                                border: "1px solid #1e293b",
+                                color: "#e5e7eb",
+                                borderRadius: 3,
+                                mb: 2,
+                                minHeight: 0
+                            }}
+                        >
+                            <CardContent>
+                                <Typography variant="h6" fontWeight={800} mb={2}>
+                                    Repository Activity{" "}
+                                    <Typography component="span" color="#94a3b8">
+                                        (Last 7 Days)
+                                    </Typography>
+                                </Typography>
+
+                                <Box
+                                    sx={{
+                                        height: 220,
+                                        borderRadius: 2,
+                                        border: "1px dashed #334155",
+                                        display: "grid",
+                                        placeItems: "center",
+                                        color: "#94a3b8",
+                                    }}
+                                >
+                                    Chart Placeholder
+                                </Box>
+                            </CardContent>
+                        </Card>
+
+                        <Card
+                            sx={{
+                                background: "rgba(15, 23, 42, 0.8)",
+                                border: "1px solid #1e293b",
+                                color: "#e5e7eb",
+                                borderRadius: 3,
+                            }}
+                        >
+                            <CardContent>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        gap: 2,
+                                        mb: 2,
+                                        flexWrap: "wrap",
+                                    }}
+                                >
+                                    <Typography variant="h6" fontWeight={800}>
+                                        Repository Overview
+                                    </Typography>
+
+                                    <TextField
+                                        size="small"
+                                        placeholder="Search repositories..."
+                                        InputProps={{
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <Search size={18} color="#94a3b8" />
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                        sx={{
+                                            input: { color: "#e5e7eb" },
+                                            "& fieldset": { borderColor: "#1e293b" },
+                                        }}
+                                    />
+                                </Box>
+
+                                <Box sx={{ overflowX: "auto" }}>
+                                    <Box component="table" sx={{ width: "100%", borderCollapse: "collapse" }}>
+                                        <Box component="thead">
+                                            <Box component="tr" sx={{ color: "#94a3b8", textAlign: "left" }}>
+                                                {[
+                                                    "Repository",
+                                                    "Type",
+                                                    "Owner / Org",
+                                                    "Branch",
+                                                    "Build",
+                                                    "Open PRs",
+                                                    "Deploy",
+                                                    "Security",
+                                                    "Activity",
+                                                ].map((head) => (
+                                                    <Box component="th" key={head} sx={{ p: 1.5, fontSize: 13 }}>
+                                                        {head}
+                                                    </Box>
+                                                ))}
+                                            </Box>
+                                        </Box>
+
+                                        <Box component="tbody">
+                                            {repoDetails.map((repo) => (
+                                                <Box
+                                                    component="tr"
+                                                    key={repo.name}
+                                                    sx={{
+                                                        borderTop: "1px solid #1e293b",
+                                                        "&:hover": { background: "rgba(30, 41, 59, 0.45)" },
+                                                    }}
+                                                >
+                                                    <Box component="td" sx={{ p: 1.5, fontWeight: 700 }}>
+                                                        {repo.name}
+                                                    </Box>
+                                                    <Box component="td" sx={{ p: 1.5 }}>
+                                                        <Chip size="small" label={repo.type} color="info" />
+                                                    </Box>
+                                                    <Box component="td" sx={{ p: 1.5 }}>
+                                                        {repo.owner}
+                                                    </Box>
+                                                    <Box component="td" sx={{ p: 1.5 }}>
+                                                        {repo.branch}
+                                                    </Box>
+                                                    <Box component="td" sx={{ p: 1.5 }}>
+                                                        <Chip
+                                                            size="small"
+                                                            label={repo.build}
+                                                            color={getStatusColor(repo.build)}
+                                                        />
+                                                    </Box>
+                                                    <Box component="td" sx={{ p: 1.5 }}>
+                                                        {repo.prs}
+                                                    </Box>
+                                                    <Box component="td" sx={{ p: 1.5 }}>
+                                                        <Chip
+                                                            size="small"
+                                                            label={repo.deploy}
+                                                            color={getStatusColor(repo.deploy)}
+                                                        />
+                                                    </Box>
+                                                    <Box component="td" sx={{ p: 1.5 }}>
+                                                        <Chip
+                                                            size="small"
+                                                            label={repo.security}
+                                                            color={getStatusColor(repo.security)}
+                                                        />
+                                                    </Box>
+                                                    <Box component="td" sx={{ p: 1.5 }}>
+                                                        {repo.activity}
+                                                    </Box>
                                                 </Box>
                                             ))}
                                         </Box>
                                     </Box>
-
-                                    <Box component="tbody">
-                                        {repoDetails.map((repo) => (
-                                            <Box
-                                                component="tr"
-                                                key={repo.name}
-                                                sx={{
-                                                    borderTop: "1px solid #1e293b",
-                                                    "&:hover": { background: "rgba(30, 41, 59, 0.45)" },
-                                                }}
-                                            >
-                                                <Box component="td" sx={{ p: 1.5, fontWeight: 700 }}>
-                                                    {repo.name}
-                                                </Box>
-                                                <Box component="td" sx={{ p: 1.5 }}>
-                                                    <Chip size="small" label={repo.type} color="info" />
-                                                </Box>
-                                                <Box component="td" sx={{ p: 1.5 }}>
-                                                    {repo.owner}
-                                                </Box>
-                                                <Box component="td" sx={{ p: 1.5 }}>
-                                                    {repo.branch}
-                                                </Box>
-                                                <Box component="td" sx={{ p: 1.5 }}>
-                                                    <Chip
-                                                        size="small"
-                                                        label={repo.build}
-                                                        color={getStatusColor(repo.build)}
-                                                    />
-                                                </Box>
-                                                <Box component="td" sx={{ p: 1.5 }}>
-                                                    {repo.prs}
-                                                </Box>
-                                                <Box component="td" sx={{ p: 1.5 }}>
-                                                    <Chip
-                                                        size="small"
-                                                        label={repo.deploy}
-                                                        color={getStatusColor(repo.deploy)}
-                                                    />
-                                                </Box>
-                                                <Box component="td" sx={{ p: 1.5 }}>
-                                                    <Chip
-                                                        size="small"
-                                                        label={repo.security}
-                                                        color={getStatusColor(repo.security)}
-                                                    />
-                                                </Box>
-                                                <Box component="td" sx={{ p: 1.5 }}>
-                                                    {repo.activity}
-                                                </Box>
-                                            </Box>
-                                        ))}
-                                    </Box>
                                 </Box>
-                            </Box>
-                        </CardContent>
-                    </Card>
-                </Grid>
+                            </CardContent>
+                        </Card>
+                    </Grid>
 
-                <Grid size={{ xs: 12, lg: 4 }}>
-                    <Card
-                        sx={{
-                            background: "rgba(15, 23, 42, 0.8)",
-                            border: "1px solid #1e293b",
-                            color: "#e5e7eb",
-                            borderRadius: 3,
-                            mb: 2,
-                        }}
-                    >
-                        <CardContent>
-                            <Typography variant="h6" fontWeight={800} mb={2}>
-                                AI Insights
-                            </Typography>
+                    <Grid size={{ xs: 12, lg: 4 }}>
+                        <Card
+                            sx={{
+                                background: "rgba(15, 23, 42, 0.8)",
+                                border: "1px solid #1e293b",
+                                color: "#e5e7eb",
+                                borderRadius: 3,
+                                mb: 2,
+                            }}
+                        >
+                            <CardContent>
+                                <Typography variant="h6" fontWeight={800} mb={2}>
+                                    AI Insights
+                                </Typography>
 
-                            {insights.map((item) => {
-                                const Icon = item.icon;
+                                {insights.map((item) => {
+                                    const Icon = item.icon;
 
-                                return (
-                                    <Box
-                                        key={item.title}
-                                        sx={{
-                                            p: 2,
-                                            mb: 1.5,
-                                            borderRadius: 2,
-                                            background: `${item.color}16`,
-                                            border: `1px solid ${item.color}33`,
-                                        }}
-                                    >
-                                        <Box sx={{ display: "flex", gap: 1.5 }}>
-                                            <Icon color={item.color} />
-                                            <Box>
-                                                <Typography fontWeight={700}>{item.title}</Typography>
-                                                <Typography color={item.color} fontSize={13} mt={1}>
-                                                    {item.action} →
-                                                </Typography>
-                                            </Box>
-                                        </Box>
-                                    </Box>
-                                );
-                            })}
-                        </CardContent>
-                    </Card>
-
-                    <Card
-                        sx={{
-                            background: "rgba(15, 23, 42, 0.8)",
-                            border: "1px solid #1e293b",
-                            color: "#e5e7eb",
-                            borderRadius: 3,
-                        }}
-                    >
-                        <CardContent>
-                            <Typography variant="h6" fontWeight={800} mb={2}>
-                                Recent Activity
-                            </Typography>
-
-                            {activities.map((item) => {
-                                const Icon = item.icon;
-
-                                return (
-                                    <Box
-                                        key={item.title}
-                                        sx={{
-                                            display: "flex",
-                                            gap: 1.5,
-                                            py: 1.5,
-                                            borderBottom: "1px solid #1e293b",
-                                        }}
-                                    >
+                                    return (
                                         <Box
+                                            key={item.title}
                                             sx={{
-                                                width: 38,
-                                                height: 38,
+                                                p: 2,
+                                                mb: 1.5,
                                                 borderRadius: 2,
-                                                display: "grid",
-                                                placeItems: "center",
-                                                color: item.color,
-                                                background: `${item.color}22`,
+                                                background: `${item.color}16`,
+                                                border: `1px solid ${item.color}33`,
                                             }}
                                         >
-                                            <Icon size={20} />
+                                            <Box sx={{ display: "flex", gap: 1.5 }}>
+                                                <Icon color={item.color} />
+                                                <Box>
+                                                    <Typography fontWeight={700}>{item.title}</Typography>
+                                                    <Typography color={item.color} fontSize={13} mt={1}>
+                                                        {item.action} →
+                                                    </Typography>
+                                                </Box>
+                                            </Box>
                                         </Box>
+                                    );
+                                })}
+                            </CardContent>
+                        </Card>
 
-                                        <Box sx={{ flex: 1 }}>
-                                            <Typography fontWeight={700}>{item.title}</Typography>
-                                            <Typography color="#94a3b8" fontSize={14}>
-                                                {item.desc}
+                        <Card
+                            sx={{
+                                background: "rgba(15, 23, 42, 0.8)",
+                                border: "1px solid #1e293b",
+                                color: "#e5e7eb",
+                                borderRadius: 3,
+                            }}
+                        >
+                            <CardContent>
+                                <Typography variant="h6" fontWeight={800} mb={2}>
+                                    Recent Activity
+                                </Typography>
+
+                                {activities.map((item) => {
+                                    const Icon = item.icon;
+
+                                    return (
+                                        <Box
+                                            key={item.title}
+                                            sx={{
+                                                display: "flex",
+                                                gap: 1.5,
+                                                py: 1.5,
+                                                borderBottom: "1px solid #1e293b",
+                                            }}
+                                        >
+                                            <Box
+                                                sx={{
+                                                    width: 38,
+                                                    height: 38,
+                                                    borderRadius: 2,
+                                                    display: "grid",
+                                                    placeItems: "center",
+                                                    color: item.color,
+                                                    background: `${item.color}22`,
+                                                }}
+                                            >
+                                                <Icon size={20} />
+                                            </Box>
+
+                                            <Box sx={{ flex: 1 }}>
+                                                <Typography fontWeight={700}>{item.title}</Typography>
+                                                <Typography color="#94a3b8" fontSize={14}>
+                                                    {item.desc}
+                                                </Typography>
+                                            </Box>
+
+                                            <Typography color="#94a3b8" fontSize={13}>
+                                                {item.time}
                                             </Typography>
                                         </Box>
-
-                                        <Typography color="#94a3b8" fontSize={13}>
-                                            {item.time}
-                                        </Typography>
-                                    </Box>
-                                );
-                            })}
-                        </CardContent>
-                    </Card>
+                                    );
+                                })}
+                            </CardContent>
+                        </Card>
+                    </Grid>
                 </Grid>
-            </Grid>
+            </Box>
 
             <RepoDetailsDialog
                 open={repoDialogOpen}
                 onClose={() => setRepoDialogOpen(false)}
                 repos={repoDetails}
-                // loading={repoLoaded}
+            // loading={repoLoaded}
             />
         </Box>
     );

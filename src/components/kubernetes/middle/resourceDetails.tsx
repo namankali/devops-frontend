@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogContent, DialogTitle, Divider, Typography } from "@mui/material";
+import { Button, Card, Dialog, DialogContent, DialogTitle, Divider, Typography } from "@mui/material";
 import { Box, useTheme } from "@mui/system";
 import { useState } from "react";
 import { capitalize } from "@mui/material";
@@ -9,6 +9,8 @@ import { filteredPodDetails } from "../../../helper/format";
 import { theme } from "../../../theme";
 import { StatusIndicator } from "../../statusIndicator";
 import CustomDialog from "../../customDialog";
+import ResourceDetailsCard from "../../resourceUsageCard";
+import CustomSkeleton from "../../customSkeleton";
 
 const DetailRow = ({
     label,
@@ -44,7 +46,15 @@ const DetailRow = ({
 );
 
 const ResourceDetails: React.FC = () => {
-    const { selectedItem, selectedResource, selectedNamespace, setSelectedItem } = KubernetesStore();
+    const {
+        selectedItem,
+        selectedResource,
+        selectedNamespace,
+        setSelectedItem,
+        selectedProvider,
+        selectedEnvironment
+    } = KubernetesStore();
+    // console.log("check->>>>>", selectedItem, selectedResource)
     const [openYaml, setOpenYaml] = useState(false);
 
     const [tab, setTab] = useState(0);
@@ -55,37 +65,26 @@ const ResourceDetails: React.FC = () => {
         error
     } = useResourceDetails(
         selectedItem?.name,
-        selectedNamespace,
-        selectedResource
+        selectedItem?.namespace ?? selectedItem?.name,
+        selectedResource,
+        selectedProvider,
+        selectedEnvironment
     );
-
     if (!selectedItem) {
         return (
-            <Box
+            <Card
                 sx={{
                     height: "100%",
                     display: "flex",
                     justifyContent: "center",
-                    alignItems: "center"
+                    alignItems: "center",
+                    backgroundColor: "transparent"
                 }}
             >
                 Nothing Selected Yet
-            </Box>
+            </Card>
         );
     }
-
-    // if (isLoading) {
-    //     return (
-    //         <Box
-    //             display="flex"
-    //             justifyContent="center"
-    //             alignItems="center"
-    //             height="100%"
-    //         >
-    //             Loading...
-    //         </Box>
-    //     );
-    // }
 
     if (error) {
         return (
@@ -95,12 +94,17 @@ const ResourceDetails: React.FC = () => {
         );
     }
 
+    if (isLoading) {
+        return <CustomSkeleton />
+    }
+
     return (
-        <Box
+        <Card
             sx={{
                 display: "flex",
                 flexDirection: "column",
-                height: "100%"
+                height: "100%",
+                bgcolor: "transparent"
             }}
         >
             <Box sx={{ flex: 3 }}>
@@ -176,7 +180,7 @@ const ResourceDetails: React.FC = () => {
                                 fontSize: 12,
                             }}
                         >
-                            {selectedResourceDetails.yaml.length === 0
+                            {selectedResourceDetails?.yaml?.length === 0
                                 ? "No Data Available"
                                 : selectedResourceDetails.yaml
                                     ?.split("\n")
@@ -200,10 +204,25 @@ const ResourceDetails: React.FC = () => {
             <Box
                 sx={{
                     flex: 1,
-                    bgcolor: "grey.200"
+                    display: "flex",
+                    justifyContent: "space-between",
+                    gap: 2
                 }}
             >
-                Lower Section
+                {selectedResourceDetails.cpu_usage === "Infinity"
+                    ? <Box sx={{ display: "flex", justifyContent: "center", width: "100%", alignItems: "center" }}>
+                        <Typography variant="h6" color={theme.palette.text.secondary}>
+                            CPU and Memory data not available
+                        </Typography>
+                    </Box>
+                    : ["CPU", "Memory"].map((str, index) => (
+                        <ResourceDetailsCard
+                            key={index}
+                            type={str}
+                            cpu_percentage={selectedResourceDetails.cpu_usage}
+                            memory_percentage={selectedResourceDetails.memory_usage}
+                        />
+                    ))}
             </Box>
 
             {/* YAML preview */}
@@ -240,7 +259,7 @@ const ResourceDetails: React.FC = () => {
                 </DialogContent>
             </CustomDialog>
 
-        </Box>
+        </Card>
     );
 };
 

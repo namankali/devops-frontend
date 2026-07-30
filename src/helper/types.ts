@@ -46,3 +46,8 @@ export type PodDetails = {
 }
 
 export type PodOverview = Omit<PodDetails, "cpu_usage" | "memory_usage" | "yaml">
+
+export type Environment =
+    | "Development"
+    | "Staging"
+    | "Production"

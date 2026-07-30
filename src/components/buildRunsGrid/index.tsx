@@ -1,4 +1,4 @@
-import { Box } from "@mui/system";
+import { Box, useTheme } from "@mui/system";
 import { useBuildRunsInfo } from "../../hooks/useBuildRuns";
 import type { BuildStatus } from "../../helper/types";
 import type { BuildRun } from "../../helper/interfaces";
@@ -8,6 +8,7 @@ import { formattedDate } from "../../helper/format";
 import React from "react";
 
 const BuildRunGrid: React.FC = () => {
+    const theme = useTheme()
     const { data, isLoading } = useBuildRunsInfo()
 
     const colorMap: Record<BuildStatus, string> = {
@@ -31,8 +32,9 @@ const BuildRunGrid: React.FC = () => {
             }}
         >
             {
-                data.map((obj: any) => (
+                data.map((obj: any, index) => (
                     <Tooltip
+                        key={index}
                         title={
                             <Box>
                                 <div><strong>Repo:</strong> {obj.repo_name}</div>
