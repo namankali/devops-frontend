@@ -19,12 +19,12 @@ export default class Server {
     static async makeRequest<T = unknown>(
         method: string,
         endpoint: string,
-        data: { [key: string]: any } = {},
+        data: Record<string, any> = {},
         params: Record<string, any> = {},
         hasRetried: boolean = false
     ): Promise<T> {
         try {
-            const access_token = Cookies.get("x-access-token")
+            const accessToken = Cookies.get("x-access-token");
 
             const response = await axios({
                 method,
@@ -32,41 +32,59 @@ export default class Server {
                 data,
                 params,
                 headers: {
-                    ...(data instanceof FormData ? {} : { "Content-Type": "application/json" }),
-                    "x-access-token": access_token || ""
+                    ...(data instanceof FormData
+                        ? {}
+                        : { "Content-Type": "application/json" }),
+                    "x-access-token": accessToken || "",
                 },
-                withCredentials: true
-            })
+                withCredentials: true,
+            });
 
-            return response.data
+            return response.data;
         } catch (error: any) {
             if (!error.response) {
-                // Toast.error("Backend server is not reachable")
-                throw error
+                throw error;
             }
 
             const status = error.response.status;
+            const responseData = error.response.data;
+
             const message =
-                error.response?.data?.message ??
-                error.response?.data?.error?.payload?.message ??
+                responseData?.message ??
+                responseData?.error?.payload?.message ??
                 "Something went wrong";
 
-            const isRefreshing = endpoint === "/users/refresh"
+            const isRefreshing = endpoint === "/api/users/refresh";
 
-            if (status === 401 && !isRefreshing && !hasRetried && (
-                message?.includes("token expired") || message?.includes("token verification failed")
-            )) {
+            // Access token expired
+            if (
+                status === 401 &&
+                responseData?.refreshRequired &&
+                !isRefreshing &&
+                !hasRetried
+            ) {
                 try {
                     if (!this.refreshPromise) {
                         this.refreshPromise = axios.post(
-                            `${this.BASE_URL}/users/refresh`,
+                            `${this.BASE_URL}/api/users/v1/refresh`,
                             {},
-                            { withCredentials: true }
+                            {
+                                withCredentials: true,
+                            }
                         );
                     }
 
-                    await this.refreshPromise;
-                    this.refreshPromise = null
+                    const refreshResponse = await this.refreshPromise;
+
+                    this.refreshPromise = null;
+
+                    // Backend returns new access token
+                    if (refreshResponse.data?.access_token) {
+                        Cookies.set(
+                            "x-access-token",
+                            refreshResponse.data.access_token
+                        );
+                    }
 
                     return this.makeRequest(
                         method,
@@ -75,24 +93,34 @@ export default class Server {
                         params,
                         true
                     );
-
-                } catch (refreshError) {
+                } catch (refreshError: any) {
                     this.refreshPromise = null;
 
                     Cookies.remove("x-access-token");
                     Cookies.remove("refresh-token");
 
-                    if (typeof this.onLogout === "function") {
-                        this.onLogout();
-                    }
+                    this.onLogout?.();
 
                     throw refreshError;
                 }
             }
-            throw error.response?.data || {
-                message,
-                status
-            };
+
+            // Session invalid / refresh expired
+            if (status === 401 && responseData?.forceLogout) {
+                Cookies.remove("x-access-token");
+                Cookies.remove("refresh-token");
+
+                this.onLogout?.();
+
+                throw responseData;
+            }
+
+            throw (
+                responseData || {
+                    message,
+                    status,
+                }
+            );
         }
     }
 
@@ -102,6 +130,20 @@ export default class Server {
             "post",
             "/api/users/v1/login",
             obj
+        );
+    }
+
+    static async signout(): Promise<any> {
+        return this.makeRequest<LoginResponse>(
+            "post",
+            "/api/users/v1/logout",
+        );
+    }
+
+    static async userProfile(): Promise<any> {
+        return this.makeRequest<any>(
+            "get",
+            "/api/users/v1/profile"
         );
     }
 

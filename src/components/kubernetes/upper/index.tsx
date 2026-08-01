@@ -51,7 +51,7 @@ const UpperKubernetesSection: React.FC<_UpperKubernetesSection> = ({
     setIsEnvironmentDisabled,
     selectedProvider
 }) => {
-    const [isApplyDisabled, setIsApplyDisabled] = useState(true);
+    // const [isApplyDisabled, setIsApplyDisabled] = useState(true);
     const handleProviderChange = (e: SelectChangeEvent) => {
         const provider = e.target.value
 
@@ -62,7 +62,7 @@ const UpperKubernetesSection: React.FC<_UpperKubernetesSection> = ({
         setNamespace("")
         setEnvironment("")
 
-        setIsEnvironmentDisabled(false)
+        // setIsEnvironmentDisabled(false)
     }
 
     const handleEnvironmentChange = (e: SelectChangeEvent) => {
@@ -78,7 +78,7 @@ const UpperKubernetesSection: React.FC<_UpperKubernetesSection> = ({
 
         setNamespace(ns)
 
-        setIsApplyDisabled(false)
+        // setIsApplyDisabled(false)
     }
 
     const handleRefresh = () => {
@@ -138,13 +138,13 @@ const UpperKubernetesSection: React.FC<_UpperKubernetesSection> = ({
                     </Box>
                     <Button
                         variant="contained"
-                        disabled={isApplyDisabled}
+                        // disabled={isApplyDisabled}
                         sx={{
                             py: 1.2,
                             background: "linear-gradient(45deg, #6a11cb, #2575fc)",
                             color: "white",
                             fontWeight: "bold",
-                            cursor: isApplyDisabled ? "not-allowed" : "pointer",
+                            // cursor: isApplyDisabled ? "not-allowed" : "pointer",
 
                             "&:disabled": {
                                 cursor: "not-allowed",

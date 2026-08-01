@@ -11,6 +11,9 @@ interface Props {
 }
 export const CustomSelect: React.FC<Props> = ({ value, handleChange, menuItems, purpose = "", label, disabled }) => {
     // console.log("check default value for dropdown", value, "menutItems", menuItems)
+    const labelId = `${label}-label`;
+    const selectId = `${label}-select`;
+
     return (
         <FormControl
             size="small"
@@ -22,9 +25,17 @@ export const CustomSelect: React.FC<Props> = ({ value, handleChange, menuItems, 
                 cursor: disabled ? "not-allowed" : "pointer"
             }}
         >
-            <InputLabel sx={{ color: "#94a3b8" }}>{label}</InputLabel>
+            <InputLabel
+                id={labelId}
+                shrink={value !== ""}
+                sx={{ color: "#94a3b8" }}
+            >
+                {label}
+            </InputLabel>
 
             <Select
+                id={selectId}
+                labelId={labelId}
                 value={value}
                 label={label}
                 onChange={handleChange}
@@ -77,6 +88,6 @@ export const CustomSelect: React.FC<Props> = ({ value, handleChange, menuItems, 
                     <MenuItem value={obj.name ?? obj.provider ?? obj} key={obj.name ?? obj.id ?? obj}>{obj.name ?? remove_undescore(obj.provider) ?? obj}</MenuItem>
                 ))}
             </Select>
-        </FormControl>
+        </FormControl >
     )
 }

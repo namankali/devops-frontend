@@ -254,7 +254,7 @@ const Home: React.FC = () => {
                     justifyContent: "space-between",
                     gap: 2,
                     alignItems: "center",
-                    mb: 3,
+                    // mb: 3,
                     flexWrap: "wrap",
                     flex: 1
                 }}
@@ -278,8 +278,16 @@ const Home: React.FC = () => {
                 </Box>
             </Box>
 
-            <Box sx={{flex: 2}}>
-                <Grid container spacing={2} sx={{ mb: 2 }}>
+            <Box
+                sx={{
+                    flex: 1,
+                    display: "flex",
+                    flexDirection: "column",
+                    minHeight: 0,
+                    gap:2
+                }}
+            >
+                <Grid container spacing={2} sx={{ height: "100%" }}>
                     {countData.map((item) => {
                         const Icon = item.icon;
 
@@ -349,19 +357,25 @@ const Home: React.FC = () => {
                     })}
                 </Grid>
 
-                <Grid container spacing={2}>
-                    <Grid size={{ xs: 12, lg: 8 }} >
+                <Grid container spacing={2} sx={{ height: "100%" }}>
+                    <Grid size={{ xs: 12, lg: 8 }} sx={{ display: "flex", flexDirection: "column", minHeight: 0 }} >
                         <Card
                             sx={{
-                                background: "rgba(15, 23, 42, 0.8)",
+                                flex: 1,
+                                display: "flex",
+                                flexDirection: "column",
+                                background: "rgba(15,23,42,.8)",
                                 border: "1px solid #1e293b",
-                                color: "#e5e7eb",
                                 borderRadius: 3,
-                                mb: 2,
-                                minHeight: 0
+                                minHeight: 0,
                             }}
                         >
-                            <CardContent>
+                            <CardContent sx={{
+                                display: "flex",
+                                flexDirection: "column",
+                                flex: 1,
+                                minHeight: 0,
+                            }}>
                                 <Typography variant="h6" fontWeight={800} mb={2}>
                                     Repository Activity{" "}
                                     <Typography component="span" color="#94a3b8">
@@ -423,7 +437,7 @@ const Home: React.FC = () => {
                                     />
                                 </Box>
 
-                                <Box sx={{ overflowX: "auto" }}>
+                                <Box sx={{ overflowX: "auto", flex: 1, minHeight: 0 }}>
                                     <Box component="table" sx={{ width: "100%", borderCollapse: "collapse" }}>
                                         <Box component="thead">
                                             <Box component="tr" sx={{ color: "#94a3b8", textAlign: "left" }}>

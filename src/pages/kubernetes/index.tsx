@@ -122,7 +122,7 @@ const Kubernetes: React.FC = () => {
         setSelectedProvider(provider);
         setSelectedEnvironment(environment);
         setSelectedNamespace(namespace);
-        console.log("providers ->>>> ", providers, "current provider", add_undescore(provider))
+
         const cluster = providers.find(
             (item: any) =>
                 item.provider === add_undescore(provider) &&
@@ -148,7 +148,6 @@ const Kubernetes: React.FC = () => {
 
                 const providersResponse =
                     await Server.providerEnvironmentInfo();
-                console.log("provider response", providersResponse)
 
                 setProviders(
                     providersResponse.data.map((obj: any) => ({
@@ -215,7 +214,7 @@ const Kubernetes: React.FC = () => {
                     nsResponse.data.map((item: any) => item.name)
                 );
 
-                setIsEnvironmentDisabled(true);
+                setIsEnvironmentDisabled(false);
                 setIsNamespaceDisabled(false);
             } catch (error) {
                 console.error(error);

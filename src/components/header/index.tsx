@@ -1,9 +1,23 @@
-import { Box } from "@mui/material"
+import { Box, Typography } from "@mui/material"
 import NavBar from "./navbar"
 import { useTheme } from "@mui/system"
+import ProfileSection from "../profileSection"
+import { UseUserProfile } from "../../hooks/useUserProfile"
 
 const Header: React.FC = () => {
     const theme = useTheme()
+
+    const hour = new Date().getHours();
+
+    const greeting =
+        hour < 12
+            ? "Good Morning"
+            : hour < 18
+                ? "Good Afternoon"
+                : "Good Evening";
+
+    const { data: userData } = UseUserProfile()
+
     return (
         <Box
             sx={{
@@ -18,11 +32,22 @@ const Header: React.FC = () => {
                 p: 2,
             }}
         >
-            <Box
-                sx={{
-                    flex: 1
-                }}
-            >AI DEVOPS</Box>
+            <Box sx={{ flex: 1 }}>
+                <Typography
+                    variant="h5"
+                    fontWeight={700}
+                    color="text.primary"
+                >
+                    {greeting}
+                </Typography>
+
+                <Typography
+                    variant="body2"
+                    color="text.secondary"
+                >
+                    {userData?.full_name}
+                </Typography>
+            </Box>
             <Box
                 sx={{
                     flex: 2,
@@ -36,7 +61,11 @@ const Header: React.FC = () => {
                 flex: 1,
                 display: "flex",
                 justifyContent: "right",
-            }}>B2</Box>
+            }}>
+                <ProfileSection
+                    userProfile={userData}
+                />
+            </Box>
         </Box>
     )
 }

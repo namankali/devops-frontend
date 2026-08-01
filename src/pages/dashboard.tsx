@@ -16,7 +16,10 @@ const DashBoard: React.FC = () => {
     }, [location.pathname])
 
     return (
-        <HeaderFooterContext.Provider value={{ disabled, setDisabled }}>
+        <HeaderFooterContext.Provider value={{
+            disabled,
+            setDisabled
+        }}>
             <Box sx={{
                 height: "100dvh",
                 display: "flex",
