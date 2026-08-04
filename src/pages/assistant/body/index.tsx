@@ -84,7 +84,7 @@ const AssistantBody: React.FC<Props> = ({ messages, onLoadMore }) => {
                 py: 1,
             }}
         >
-            {messages.messages.map((msg) => (
+            {messages?.messages?.map((msg) => (
                 <Box
                     key={msg.id}
                     sx={{
