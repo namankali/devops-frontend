@@ -9,7 +9,7 @@ interface QueryData {
 
 const useChats = () => {
     const [queryData, setQueryData] = useState<QueryData>({
-        limit: 10,
+        limit: 20,
         offset: 0
     })
 
