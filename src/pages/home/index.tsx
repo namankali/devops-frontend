@@ -284,7 +284,7 @@ const Home: React.FC = () => {
                     display: "flex",
                     flexDirection: "column",
                     minHeight: 0,
-                    gap:2
+                    gap: 2
                 }}
             >
                 <Grid container spacing={2} sx={{ height: "100%" }}>
@@ -358,7 +358,7 @@ const Home: React.FC = () => {
                 </Grid>
 
                 <Grid container spacing={2} sx={{ height: "100%" }}>
-                    <Grid size={{ xs: 12, lg: 8 }} sx={{ display: "flex", flexDirection: "column", minHeight: 0 }} >
+                    <Grid size={{ xs: 12, lg: 8 }} sx={{ display: "flex", flexDirection: "column", minHeight: 0, gap:2 }} >
                         <Card
                             sx={{
                                 flex: 1,
