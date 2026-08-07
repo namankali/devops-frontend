@@ -23,7 +23,7 @@ const Assistant: React.FC = () => {
         }));
     };
 
-    // Send message (optimistic UI)
+    // Send message
     const handleSend = async (text: string) => {
         if (!data?.conversation_id) {
             await Server.start_convo({ message: text } as StartConvo)
