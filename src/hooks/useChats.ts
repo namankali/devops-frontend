@@ -7,7 +7,8 @@ interface QueryData {
     offset: number
 }
 
-const useChats = () => {
+
+const useChats = (branchName: string = "development") => {
     const [queryData, setQueryData] = useState<QueryData>({
         limit: 20,
         offset: 0
@@ -18,11 +19,18 @@ const useChats = () => {
     const [error, setError] = useState<string | null>(null)
     const [hasMore, setHasMore] = useState(true)
 
+    useEffect(() => {
+        setData({} as MessagesObj)
+        setQueryData({ limit: 20, offset: 0 })
+        setLoading(true)
+        setHasMore(true)
+    }, [branchName])
+
     const fetchData = useCallback(async () => {
         if (!hasMore) return
 
         try {
-            const res = await Server.chats(queryData.limit, queryData.offset)
+            const res = await Server.chats(queryData.limit, queryData.offset, branchName)
             const newData = res.data[0]
 
             if (!newData || !newData.messages?.length) {
@@ -37,9 +45,7 @@ const useChats = () => {
             setData((prev) => {
                 if (!prev.messages) {
                     const sorted = [...newData.messages].sort(
-                        (a, b) =>
-                            new Date(a.created_at).getTime() -
-                            new Date(b.created_at).getTime()
+                        (a, b) => new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime()
                     )
 
                     return {
@@ -57,8 +63,8 @@ const useChats = () => {
                     new Map(combined.map(m => [m.id, m])).values()
                 ).sort(
                     (a, b) =>
-                        new Date(a.created_at).getTime() -
-                        new Date(b.created_at).getTime()
+                        new Date(a.updated_at).getTime() -
+                        new Date(b.updated_at).getTime()
                 )
 
                 return {
@@ -73,7 +79,7 @@ const useChats = () => {
         } finally {
             setLoading(false)
         }
-    }, [queryData, hasMore])
+    }, [queryData, hasMore, branchName])
 
     useEffect(() => {
         fetchData()
@@ -86,7 +92,8 @@ const useChats = () => {
         hasMore,
         setData,
         refetch: fetchData,
-        setQueryData
+        setQueryData,
+        setHasMore
     }
 }
 
