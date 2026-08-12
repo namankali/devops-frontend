@@ -1,10 +1,19 @@
 import { Box } from "@mui/system";
 import type React from "react";
 import ShieldIcon from "@mui/icons-material/Security";
-import { Chip, Typography } from "@mui/material";
+import { Chip, Typography, type SelectChangeEvent } from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
+import { CustomSelect } from "../../../components/customSelect";
 
-const AssistantHeader: React.FC = () => {
+interface Props {
+    branchName: string,
+    setBranchName: any
+}
+
+const AssistantHeader: React.FC<Props> = ({ branchName, setBranchName }) => {
+    const handleSelectChange = (e: SelectChangeEvent) => {
+        setBranchName((prev: any) => e.target.value)
+    }
     return (
         <Box
             sx={{
@@ -20,18 +29,29 @@ const AssistantHeader: React.FC = () => {
             <Box
                 sx={{
                     display: "flex",
+                    justifyContent: "space-between",
                     alignItems: "center",
-                    gap: 2
+                    gap: 4,
                 }}
             >
-                <ShieldIcon color="success" />
-
-                <Box>
+                <Box sx={{ display: "flex", flexDirection: "row", gap: 1 }}>
+                    <ShieldIcon color="success" />
                     <Typography fontWeight="bold">AI Assistant</Typography>
                 </Box>
 
                 {/* <Chip label="v1.0.0" size="small" /> */}
-                <Chip label="Development" size="small" color="success" />
+                {/* <Chip label="Development" size="small" color="success" /> */}
+                <CustomSelect
+                    value={branchName}
+                    handleChange={handleSelectChange}
+                    menuItems={[
+                        { id: 1, name: "development" },
+                        { id: 2, name: "staging" },
+                        { id: 3, name: "production" },
+                    ]}
+                    label="Branch"
+
+                />
 
             </Box>
 
