@@ -7,11 +7,13 @@ import AssitantInput from "./input";
 import useChats from "../../hooks/useChats";
 import type { StartConvo } from "../../helper/interfaces";
 import Server from "../../service/Server";
+import { useEffect, useState } from "react";
 
 const Assistant: React.FC = () => {
     const theme = useTheme();
+    const [branchName, setBranchName] = useState("development")
 
-    const { data, setData, refetch, setQueryData, hasMore, loading } = useChats();
+    const { data, setData, refetch, setQueryData, hasMore, loading, setHasMore } = useChats(branchName);
 
     // Load older messages (scroll up)
     const handleLoadMore = () => {
@@ -26,8 +28,40 @@ const Assistant: React.FC = () => {
     // Send message
     const handleSend = async (text: string) => {
         if (!data?.conversation_id) {
-            await Server.start_convo({ message: text } as StartConvo)
-            await refetch()
+
+            const tempUserMessage = {
+                id: Date.now(),
+                role: "user",
+                content: text,
+                status: "completed",
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+            };
+
+            const tempLoadingMessage = {
+                id: Date.now() + 1,
+                role: "assistant",
+                content: "Typing...",
+                status: "loading",
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+            };
+
+            setData({
+                conversation_id: null,
+                messages: [tempUserMessage, tempLoadingMessage],
+            } as any);
+
+            await Server.start_convo({ message: text } as StartConvo, branchName)
+            setQueryData({ limit: 20, offset: 0 })
+            setHasMore(true)
+            const result = await refetch()
+
+            if (result.data) {
+                setData(result?.data)
+            }
+
+            console.log("data updated!!!!", data)
             return
         }
 
@@ -57,10 +91,13 @@ const Assistant: React.FC = () => {
         }));
 
         try {
-            const res = await Server.new_chat({
-                conversation_id: data.conversation_id,
-                message: text,
-            });
+            const res = await Server.new_chat(
+                {
+                    conversation_id: data.conversation_id,
+                    message: text,
+                },
+                branchName
+            );
 
             setData((prev) => ({
                 ...prev,
@@ -93,7 +130,10 @@ const Assistant: React.FC = () => {
                 color: theme.palette.text.primary,
             }}
         >
-            <AssistantHeader />
+            <AssistantHeader
+                branchName={branchName}
+                setBranchName={setBranchName}
+            />
 
             <Box
                 sx={{

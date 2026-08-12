@@ -181,11 +181,12 @@ export default class Server {
 
     static async chats(
         limit: number = 10,
-        offset: number = 0
+        offset: number = 0,
+        branch_name: string
     ): Promise<ApiResponse<any>> {
         return this.makeRequest<ApiResponse<any>>(
             "get",
-            "/api/chats/v1/stream",
+            `/api/chats/v1/stream/${branch_name}`,
             {},
             {
                 limit: limit,
@@ -195,19 +196,19 @@ export default class Server {
     }
 
     // Start conversation
-    static async start_convo(obj: StartConvo): Promise<any> {
+    static async start_convo(obj: StartConvo, branch: string): Promise<any> {
         return this.makeRequest<any>(
             "post",
-            "/api/chats/v1/chat",
+            `/api/chats/v1/chat/${branch}`,
             obj
         )
     }
 
     // insert message in convsersation
-    static async new_chat(obj: any): Promise<any> {
+    static async new_chat(obj: any, branch: string): Promise<any> {
         return this.makeRequest<any>(
             "patch",
-            "/api/chats/v1/new/message",
+            `/api/chats/v1/new/message/${branch}`,
             obj
         );
     }
