@@ -13,7 +13,7 @@
     "docker:push": "docker push namankali/devops-frontend:latest",
     "preview": "vite preview",
     "kubectl:apply": "kubectl apply -f deployment.yml",
-    "kubectl:redeploy": "kubectl rollout restart deployment devops-frontend-deploy"
+    "kubectl:redeploy": "kubectl rollout restart deployment devops-frontend-deploy -n devops"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
