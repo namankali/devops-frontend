@@ -26,11 +26,16 @@ const useChats = (branchName: string = "development") => {
         setHasMore(true)
     }, [branchName])
 
-    const fetchData = useCallback(async () => {
-        if (!hasMore) return
+    const fetchData = useCallback(async (): Promise<MessagesObj | null> => {
+        if (!hasMore) return null
 
         try {
-            const res = await Server.chats(queryData.limit, queryData.offset, branchName)
+            const res = await Server.chats(
+                queryData.limit,
+                queryData.offset,
+                branchName
+            )
+
             const newData = res.data[0]
 
             if (!newData || !newData.messages?.length) {
@@ -42,25 +47,31 @@ const useChats = (branchName: string = "development") => {
                 setHasMore(false)
             }
 
-            setData((prev) => {
-                if (!prev.messages) {
-                    const sorted = [...newData.messages].sort(
-                        (a, b) => new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime()
-                    )
+            const sortedNewMessages = [...newData.messages].sort(
+                (a, b) =>
+                    new Date(a.updated_at).getTime() -
+                    new Date(b.updated_at).getTime()
+            )
 
+            setData((prev) => {
+                // FIRST PAGE / REFRESH
+                if (queryData.offset === 0) {
                     return {
                         ...newData,
-                        messages: sorted
+                        messages: sortedNewMessages
                     }
                 }
 
+                // LOAD OLDER MESSAGES
                 const combined = [
-                    ...prev.messages,
-                    ...newData.messages
+                    ...(prev.messages || []),
+                    ...sortedNewMessages
                 ]
 
                 const unique = Array.from(
-                    new Map(combined.map(m => [m.id, m])).values()
+                    new Map(
+                        combined.map((message) => [message.id, message])
+                    ).values()
                 ).sort(
                     (a, b) =>
                         new Date(a.updated_at).getTime() -
@@ -73,6 +84,8 @@ const useChats = (branchName: string = "development") => {
                     messages: unique
                 }
             })
+
+            return newData
 
         } catch (err: any) {
             setError(err?.message || "Something went wrong")

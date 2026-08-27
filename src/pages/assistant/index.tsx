@@ -57,8 +57,8 @@ const Assistant: React.FC = () => {
             setHasMore(true)
             const result = await refetch()
 
-            if (result.data) {
-                setData(result?.data)
+            if (result) {
+                setData(result)
             }
 
             console.log("data updated!!!!", data)
