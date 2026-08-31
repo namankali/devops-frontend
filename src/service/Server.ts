@@ -229,6 +229,17 @@ export default class Server {
         );
     }
 
+    static async dashboard_kubernetes(clusterName?: string): Promise<any> {
+        return this.makeRequest<any>(
+            "get",
+            "/api/kubernetes/v1/dashboard/kube",
+            {},
+            clusterName ? { clusterName } : undefined
+        );
+    }
+
+
+
     // Kubernetes
     static async registerKubernetes(data: FormData): Promise<any> {
         console.log("data before api call", data)
@@ -303,12 +314,15 @@ export default class Server {
         )
     }
 
-    static kubernetesEventsDetails(namespace: string): Promise<any> {
+    static kubernetesEventsDetails(namespace: string, provider: string, env: string): Promise<any> {
         return this.makeRequest<any>(
             "get",
-            `/api/kubernetes/v1/events/${namespace}`
+            `/api/kubernetes/v1/events/${namespace}`,
+            {},
+            provider && env ? { provider, env } : {}
         )
     }
+    
     static kubernetesDefaultCluster(): Promise<any> {
         return this.makeRequest<any>(
             "get",

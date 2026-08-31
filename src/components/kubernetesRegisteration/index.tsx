@@ -5,6 +5,10 @@ import {
     Typography,
     Input,
     Button,
+    Card,
+    TextField,
+    Alert,
+    AlertTitle,
 } from "@mui/material";
 import { Grid } from "@mui/system";
 
@@ -19,6 +23,7 @@ import CloudUploadOutlinedIcon from "@mui/icons-material/CloudUploadOutlined";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
 import Server from "../../service/Server";
 import Toast from "../../utils/toast";
+import CustomSAInputs from "../customServiceAccountInput";
 
 const authMethods = [
     {
@@ -46,6 +51,19 @@ const authMethods = [
         icon: <VpnKeyOutlinedIcon />,
     },
 ];
+
+const serviceAccountDetails = [
+    {
+        "heading": "Service Account Details",
+        "placeholder": "account name",
+        "footer": "Name of the service account in the cluster"
+    },
+    {
+        "heading": "Namespace",
+        "placeholder": "namespace",
+        "footer": "Namespace where service account exists"
+    },
+]
 
 interface Props {
     onSuccess?: () => void;
@@ -160,14 +178,11 @@ const KubernetesRegisteration: React.FC<Props> = ({
                     width: "100%",
                     maxWidth: 1000,
                     maxHeight: "90vh",
-
                     overflowY: "auto",
-
                     borderRadius: 3,
-
-                    bgcolor: "background.paper",
-
+                    bgcolor: "#111c2d",
                     p: 4,
+                    border: "1px solid rgba(255, 255, 255, 0.08)",
                 }}
             >
                 <Typography
@@ -351,6 +366,51 @@ const KubernetesRegisteration: React.FC<Props> = ({
                                 </Box>
                             </Grid>
                         )}
+
+                    {authenticationMethod === "SERVICE_ACCOUNT" && (
+                        <Grid size={{ xs: 12 }}>
+                            <Card sx={{ background: "transparent" }}>
+                                <Typography variant="h5">Service Account Details</Typography>
+                                <Typography variant="body2">Provide the service account information to authenticate the cluster</Typography>
+                            </Card>
+
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    gap: 2,
+                                    mt: 2
+                                }}
+                            >
+                                {serviceAccountDetails.map((obj) => {
+                                    return <CustomSAInputs
+                                        heading={obj.heading}
+                                        footer={obj.footer}
+                                        placeholder={obj.placeholder}
+                                    />
+                                })}
+                            </Box>
+
+                            <Alert
+                                severity="info"
+                                sx={{
+                                    mt: 3,
+                                    backgroundColor: "#1e293b",
+                                    border: "1px solid",
+                                    borderColor: "info.main",
+                                }}
+                            >
+                                <AlertTitle>How it works</AlertTitle>
+
+                                Your application will use the service account credentials
+                                automatically when running inside the Kubernetes cluster.
+
+                                <br />
+
+                                Make sure the service account has the necessary RBAC
+                                permissions to access cluster resources.
+                            </Alert>
+                        </Grid>
+                    )}
 
                     <Grid size={{ xs: 12 }}>
                         <Box

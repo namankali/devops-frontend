@@ -4,8 +4,8 @@ import { KubernetesStore } from "../../../helper/useKubernetesStore"
 import { UseKubernetesEvents } from "../../../hooks/useKubernetesEvents"
 
 const RecentEvents: React.FC = () => {
-    const { selectedNamespace } = KubernetesStore()
-    const { data: eventDetails, isLoading } = UseKubernetesEvents(selectedNamespace)
+    const { selectedNamespace, selectedProvider, selectedEnvironment } = KubernetesStore()
+    const { data: eventDetails, isLoading } = UseKubernetesEvents(selectedNamespace, selectedProvider, selectedEnvironment)
 
     const theme = useTheme()
     return (

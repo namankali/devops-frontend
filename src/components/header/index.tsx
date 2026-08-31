@@ -34,18 +34,26 @@ const Header: React.FC = () => {
         >
             <Box sx={{ flex: 1 }}>
                 <Typography
-                    variant="h5"
-                    fontWeight={700}
-                    color="text.primary"
+                    sx={{
+                        fontSize: "1.35rem",
+                        fontWeight: 700,
+                        color: "text.primary",
+                        letterSpacing: "-0.02em",
+                        lineHeight: 1.2,
+                    }}
                 >
                     {greeting}
                 </Typography>
 
                 <Typography
-                    variant="body2"
-                    color="text.secondary"
+                    sx={{
+                        mt: 0.4,
+                        fontSize: "0.90rem",
+                        color: "text.secondary",
+                        letterSpacing: "0.01em",
+                    }}
                 >
-                    {userData?.full_name}
+                    Infrastructure, automation & intelligence at a glance.
                 </Typography>
             </Box>
             <Box
@@ -66,7 +74,7 @@ const Header: React.FC = () => {
                     userProfile={userData}
                 />
             </Box>
-        </Box>
+        </Box >
     )
 }
 

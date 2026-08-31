@@ -10,7 +10,6 @@ interface Props {
     disabled?: boolean
 }
 export const CustomSelect: React.FC<Props> = ({ value, handleChange, menuItems, purpose = "", label, disabled }) => {
-    // console.log("check default value for dropdown", value, "menutItems", menuItems)
     const labelId = `${label}-label`;
     const selectId = `${label}-select`;
 
@@ -85,7 +84,12 @@ export const CustomSelect: React.FC<Props> = ({ value, handleChange, menuItems, 
             >
                 {purpose === "ns" && (<MenuItem value="all">All</MenuItem>)}
                 {menuItems?.map((obj) => (
-                    <MenuItem value={obj.name ?? obj.provider ?? obj} key={obj.name ?? obj.id ?? obj}>{obj.name ?? remove_undescore(obj.provider) ?? obj}</MenuItem>
+                    <MenuItem
+                        value={obj.name ?? obj.provider ?? obj.display_name ?? obj}
+                        key={obj.name ?? obj.id ?? obj}
+                    >
+                        {obj.name ?? remove_undescore(obj.provider) ?? obj.display_name ?? obj}
+                    </MenuItem>
                 ))}
             </Select>
         </FormControl >

@@ -71,6 +71,6 @@ export const KubernetesStore = create<KubernetesStore>((set) => ({
   }),
 
   setSelectedDisplayName: (ds) => set({
-    selectedDisplayName: ds
+    selectedDisplayName: ds ?? ""
   })
 }));

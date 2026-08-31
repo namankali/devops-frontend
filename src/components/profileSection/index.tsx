@@ -222,6 +222,7 @@ const ProfileSection: React.FC<Props> = ({ userProfile }) => {
             });
         }
     };
+    console.log("user profile", userProfile)
 
     return (
         <Box ref={anchorRef}>
@@ -229,45 +230,94 @@ const ProfileSection: React.FC<Props> = ({ userProfile }) => {
             <Box
                 display="flex"
                 alignItems="center"
-                gap={2}
+                gap={1.5}
                 onClick={handleToggle}
                 sx={{
-                    padding: 1,
-                    backgroundColor: "transparent",
+                    px: 1.5,
+                    py: 0.75,
                     borderRadius: 2,
-                    maxWidth: 300,
-                    backdropFilter: "blur(8px)",
                     cursor: "pointer",
                     userSelect: "none",
+                    transition: "all 0.2s ease",
+
+                    "&:hover": {
+                        backgroundColor: "rgba(0, 229, 255, 0.06)",
+                    },
                 }}
             >
-                <Avatar
-                    alt={userProfile?.name}
-                    src="https://i.pravatar.cc/100"
-                    sx={{
-                        width: 56,
-                        height: 56,
-                        border: "2px solid #00e5ff",
-                        boxShadow: "0 0 10px #00e5ff",
-                    }}
-                />
-                <Box>
-                    <Typography
-                        variant="subtitle1"
-                        fontWeight="bold"
-                        sx={{ color: "#00e5ff", textShadow: "0 0 6px #00e5ff" }}
+                <Box sx={{ position: "relative" }}>
+                    <Avatar
+                        sx={{
+                            width: 50,
+                            height: 50,
+                            fontSize: 16,
+                            fontWeight: 700,
+                            color: "#fff",
+                            background:
+                                "linear-gradient(135deg, #0891b2, #2563eb)",
+                            border: "1px solid rgba(0, 229, 255, 0.5)",
+                            boxShadow: "0 0 10px rgba(0, 229, 255, 0.25)",
+                        }}
                     >
-                        {userProfile?.name}
+                        {userProfile?.full_name
+                            ?.split(" ")
+                            .map((name: string) => name[0])
+                            .join("")
+                            .slice(0, 2)
+                            .toUpperCase()}
+                    </Avatar>
+
+                    {/* Online indicator */}
+                    <Box
+                        sx={{
+                            position: "absolute",
+                            bottom: 1,
+                            right: 1,
+                            width: 9,
+                            height: 9,
+                            borderRadius: "50%",
+                            backgroundColor: "#22c55e",
+                            border: "2px solid #0f172a",
+                        }}
+                    />
+                </Box>
+
+                <Box sx={{ minWidth: 0 }}>
+                    <Typography
+                        sx={{
+                            fontSize: "1.35rem",
+                            fontWeight: 700,
+                            color: "text.primary",
+                            lineHeight: 1.2,
+                            whiteSpace: "nowrap",
+                        }}
+                    >
+                        {userProfile?.full_name}
                     </Typography>
+
                     <Typography
-                        variant="body2"
-                        sx={{ color: "#7aefff", textShadow: "0 0 3px #7aefff" }}
+                        sx={{
+                            fontSize: "0.90rem",
+                            color: "text.secondary",
+                            mt: 0.3,
+                            whiteSpace: "nowrap",
+                        }}
                     >
-                        {capitalize(
-                            JSON.parse(localStorage.getItem("login info"))?.user_role || ""
-                        )}
+                        {capitalize(userProfile?.role || "")}
                     </Typography>
                 </Box>
+
+                <Typography
+                    sx={{
+                        ml: 0.5,
+                        fontSize: 12,
+                        color: "text.secondary",
+                        transition: "transform 0.2s ease",
+                        transform: open ? "rotate(180deg)" : "rotate(0deg)",
+                    }}
+                >
+                    ▾
+                </Typography>
             </Box>
 
             {/* Dropdown panel */}
