@@ -42,7 +42,7 @@ const BuildDurationChart: React.FC<BuildDurationChart_> = (props) => {
             }}
         >
             <Typography>
-                Build Duration for {props.branchName} Branch
+                Build Duration Across {props.branchName} Branches
             </Typography>
 
             <Box sx={{ flex: 1 }}>

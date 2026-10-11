@@ -2,7 +2,7 @@ import { Paper, Typography, useTheme } from "@mui/material";
 import usePipelineStats from "../../hooks/usePipelineStats";
 const Build_failure: React.FC = () => {
     const theme = useTheme()
-    const { failedRuns } = usePipelineStats()
+    const { failedRuns, totalRuns } = usePipelineStats()
     return (
         <Paper
             elevation={0}

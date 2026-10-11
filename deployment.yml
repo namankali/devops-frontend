@@ -52,6 +52,8 @@ kind: Service
 metadata:
   name: devops-frontend-service
   namespace: devops
+  annotations:
+    event-engine.ai-devops.example.com/depends-on: "devops-backend-service"
 spec:
   selector:
     app: devops-frontend
