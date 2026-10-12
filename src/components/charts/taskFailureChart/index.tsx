@@ -4,11 +4,11 @@ import { Typography, useTheme } from "@mui/material"
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
 const data = [
-    { name: "Publish Test Results", value: 10 },
-    { name: "Run Smoke Tests", value: 8 },
-    { name: "API Test", value: 7 },
-    { name: "Install Dependencies", value: 6 },
-    { name: "Validation", value: 6 },
+    { name: "Publish Test Results", value: 18 },
+    { name: "Run Smoke Tests", value: 14 },
+    { name: "API Test", value: 12 },
+    { name: "Install Dependencies", value: 10 },
+    { name: "Validation", value: 8 },
 ];
 
 const COLORS = [

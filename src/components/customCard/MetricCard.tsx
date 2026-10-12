@@ -1,15 +1,21 @@
-
+import type React from "react";
 import { Typography } from "@mui/material";
 import { Box, useTheme } from "@mui/system";
 
 interface Props {
     title: string;
     value: number | string;
-    subtitle: string;
+    subtitle?: string;
 }
 
-const MetricCard: React.FC<Props> = ({ title, value, subtitle }) => {
-    const theme = useTheme()
+const MetricCard: React.FC<Props> = ({
+    title,
+    value,
+    subtitle,
+}) => {
+    const theme = useTheme();
+
+    const isBuildSuccessRate = title === "Build Success Rate";
 
     return (
         <Box
@@ -22,43 +28,59 @@ const MetricCard: React.FC<Props> = ({ title, value, subtitle }) => {
                 flexDirection: "column",
                 justifyContent: "space-between",
                 height: "100%",
-                width: "100%"
+                width: "100%",
             }}
         >
+            {/* Title */}
             <Typography>
                 {title}
             </Typography>
 
+            {/* Value */}
             <Box
                 display="flex"
                 justifyContent="center"
-
                 gap={1}
                 sx={{
                     alignItems: "center",
-                    flex: 1
+                    flex: 1,
                 }}
             >
                 <Typography
                     sx={{
                         fontSize: 48,
                         fontWeight: 700,
-                        lineHeight: 1
+                        lineHeight: 1,
                     }}
                 >
-                    {value}
+                    {isBuildSuccessRate ? `${value}%` : value}
                 </Typography>
 
-                <Typography
-                    variant="h6"
-                    color="text.secondary"
-                    sx={{ fontWeight: 500 }}
-                >
-                    {subtitle}
-                </Typography>
+                {/* Subtitle */}
+                {isBuildSuccessRate ? (
+                    <Typography
+                        variant="h6"
+                        color="text.secondary"
+                        sx={{
+                            fontWeight: 500,
+                        }}
+                    >
+                        Success Rate
+                    </Typography>
+                ) : (
+                    <Typography
+                        variant="h6"
+                        color="text.secondary"
+                        sx={{
+                            fontWeight: 500,
+                        }}
+                    >
+                        {subtitle}
+                    </Typography>
+                )}
             </Box>
-        </Box >
-    )
-}
+        </Box>
+    );
+};
 
-export default MetricCard
+export default MetricCard;
