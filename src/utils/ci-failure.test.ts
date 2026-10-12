@@ -5,3 +5,4 @@ describe("CI/CD failure demonstration", () => {
         expect(1 + 1).toBe(2);
     });
 });
+
