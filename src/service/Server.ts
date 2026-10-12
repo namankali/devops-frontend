@@ -176,6 +176,18 @@ export default class Server {
             "/api/actions/v1/build/chart"
         );
     }
+    static async agentUsage(): Promise<ApiResponse<BuildChart[]>> {
+        return this.makeRequest<ApiResponse<BuildChart[]>>(
+            "get",
+            "/api/actions/v1/agent/usage"
+        );
+    }
+    static async successRateData(): Promise<ApiResponse<BuildChart[]>> {
+        return this.makeRequest<ApiResponse<BuildChart[]>>(
+            "get",
+            "/api/actions/v1/success/rate"
+        );
+    }
 
     // Chats
 
@@ -322,7 +334,7 @@ export default class Server {
             provider && env ? { provider, env } : {}
         )
     }
-    
+
     static kubernetesDefaultCluster(): Promise<any> {
         return this.makeRequest<any>(
             "get",

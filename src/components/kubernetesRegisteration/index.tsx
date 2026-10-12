@@ -10,7 +10,7 @@ import {
     Alert,
     AlertTitle,
 } from "@mui/material";
-import { Grid } from "@mui/system";
+import { Grid, useTheme } from "@mui/system";
 
 import CustomSelector from "./CustomSelector";
 import CustomAuthenticationSelector from "./CustomAuthenticationSelector";
@@ -74,6 +74,7 @@ const KubernetesRegisteration: React.FC<Props> = ({
     onSuccess,
     registerationHandlerClose
 }) => {
+    const theme = useTheme()
     const [displayName, setDisplayName] = useState("");
     const [providerEnvValue, setProviderEnvValue] = useState({
         provider: "",
@@ -178,11 +179,33 @@ const KubernetesRegisteration: React.FC<Props> = ({
                     width: "100%",
                     maxWidth: 1000,
                     maxHeight: "90vh",
-                    overflowY: "auto",
                     borderRadius: 3,
                     bgcolor: "#111c2d",
                     p: 4,
                     border: "1px solid rgba(255, 255, 255, 0.08)",
+                    overflowY: "auto",
+
+
+                    "&::-webkit-scrollbar": {
+                        width: 8,
+                    },
+
+                    "&::-webkit-scrollbar-track": {
+                        background: theme.palette.background.default,
+                        borderRadius: 8,
+                    },
+
+                    "&::-webkit-scrollbar-thumb": {
+                        background: theme.palette.primary.main,
+                        borderRadius: 8,
+                    },
+
+                    "&::-webkit-scrollbar-thumb:hover": {
+                        background: theme.palette.primary.dark,
+                    },
+
+                    scrollbarWidth: "thin",
+                    scrollbarColor: `${theme.palette.primary.main} ${theme.palette.background.default}`,
                 }}
             >
                 <Typography

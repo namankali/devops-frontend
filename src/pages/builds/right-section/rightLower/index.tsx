@@ -2,6 +2,8 @@ import { Box } from "@mui/system";
 import type React from "react";
 import JobQueueChart from "../../../../components/charts/jobQueues";
 import AgentUsuageChart from "../../../../components/charts/agentUsuageChart";
+import { useEffect, useState } from "react";
+import Server from "../../../../service/Server";
 
 const data = [
     { date: "Jan 01", usage: 4.0 },
@@ -13,6 +15,31 @@ const data = [
 ];
 
 const RightLower: React.FC = () => {
+
+    const [data, setData] = useState([])
+
+    useEffect(() => {
+        let mounted = true;
+
+        const fetchData = async () => {
+            try {
+                const apiResponse = await Server.agentUsage()
+
+                if (mounted) setData(apiResponse.data ?? [])
+            } catch (error) {
+                console.error("Failed to agent usage details", error);
+
+                if (mounted) setData([]);
+            }
+        }
+
+        fetchData()
+
+        return () => {
+            mounted = false;
+        };
+    }, [])
+
     return (
         <Box
             sx={{

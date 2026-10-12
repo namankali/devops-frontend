@@ -1,4 +1,4 @@
-import { Box } from "@mui/system";
+import { Box, useTheme } from "@mui/system";
 import type React from "react";
 import ShieldIcon from "@mui/icons-material/Security";
 import { Typography } from "@mui/material";
@@ -12,7 +12,7 @@ interface Props {
 }
 
 const AssistantBody: React.FC<Props> = ({ messages, onLoadMore }) => {
-    // console.log("messages", messages)
+    const theme = useTheme()
     const containerRef = useRef<HTMLDivElement>(null)
     const shouldAutoScroll = useRef(true)
     const previousScrollHeight = useRef<null | number>(null)
@@ -92,13 +92,35 @@ const AssistantBody: React.FC<Props> = ({ messages, onLoadMore }) => {
             ref={containerRef}
             onScroll={handleScroll}
             sx={{
-                overflowY: "auto",
                 display: "flex",
                 flexDirection: "column",
                 width: "100%",
                 gap: 2,
                 px: 2,
                 py: 1,
+                overflowY: "auto",
+
+
+                "&::-webkit-scrollbar": {
+                    width: 8,
+                },
+
+                "&::-webkit-scrollbar-track": {
+                    background: theme.palette.background.default,
+                    borderRadius: 8,
+                },
+
+                "&::-webkit-scrollbar-thumb": {
+                    background: theme.palette.primary.main,
+                    borderRadius: 8,
+                },
+
+                "&::-webkit-scrollbar-thumb:hover": {
+                    background: theme.palette.primary.dark,
+                },
+
+                scrollbarWidth: "thin",
+                scrollbarColor: `${theme.palette.primary.main} ${theme.palette.background.default}`,
             }}
         >
             {messages?.messages?.map((msg) => (

@@ -27,7 +27,7 @@ const LeftSectionLower: React.FC = () => {
             }}
         >
             <Typography variant="h6" sx={{ mb: 2 }}>
-                Main Branch Build Runs
+                All Branch Build Runs
             </Typography>
 
             <TableContainer

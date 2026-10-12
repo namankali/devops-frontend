@@ -3,7 +3,12 @@ import React from "react"
 import RightUpper from "./rightUpper"
 import RightMiddle from "./rightMiddle"
 import RightLower from "./rightLower"
-const RightSection: React.FC = () => {
+
+interface Props {
+    successRate: Record<string, string>
+}
+
+const RightSection: React.FC<Props> = ({ successRate }) => {
     return <Box
         sx={{
             height: "100%",
@@ -15,7 +20,9 @@ const RightSection: React.FC = () => {
         }}
     >
         <RightUpper />
-        <RightMiddle />
+        <RightMiddle
+            successRate={successRate}
+        />
         <RightLower />
     </Box>
 }

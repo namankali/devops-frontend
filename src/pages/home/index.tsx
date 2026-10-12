@@ -11,6 +11,7 @@ import {
     InputAdornment,
     LinearProgress,
     Skeleton,
+    useTheme,
 } from "@mui/material";
 import {
     Search,
@@ -125,7 +126,7 @@ const stats = [
         title: "AI Health Score",
         value: "82",
         suffix: "/100",
-        change: "↑ 5 from yesterday",
+        change: "Based on last 24 hours",
         icon: Bot,
         color: "#8b5cf6",
         progress: 82,
@@ -233,6 +234,7 @@ const getStatusColor = (
 };
 
 const Home: React.FC = () => {
+    const theme = useTheme()
     const [selectedClusterName, setSelectedClusterName] = useState("");
     const { data: rows, isLoading } = useRepoDetailsCount();
     const {
@@ -1185,18 +1187,27 @@ const Home: React.FC = () => {
 
                                     overflowY: "auto",
 
-                                    scrollbarWidth: "thin",
 
                                     "&::-webkit-scrollbar": {
-                                        width: 6,
+                                        width: 8,
                                     },
 
-                                    "&::-webkit-scrollbar-thumb":
-                                    {
-                                        background:
-                                            "#334155",
-                                        borderRadius: 10,
+                                    "&::-webkit-scrollbar-track": {
+                                        background: theme.palette.background.default,
+                                        borderRadius: 8,
                                     },
+
+                                    "&::-webkit-scrollbar-thumb": {
+                                        background: theme.palette.primary.main,
+                                        borderRadius: 8,
+                                    },
+
+                                    "&::-webkit-scrollbar-thumb:hover": {
+                                        background: theme.palette.primary.dark,
+                                    },
+
+                                    scrollbarWidth: "thin",
+                                    scrollbarColor: `${theme.palette.primary.main} ${theme.palette.background.default}`,
                                 }}
                             >
                                 {activities.map((item) => {

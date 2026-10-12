@@ -20,7 +20,7 @@ const RightUpper: React.FC = () => {
                 }}
             >
                 <BuildDurationChart
-                    branchName="Main"
+                    branchName="All"
                 />
             </Box>
             <Box
