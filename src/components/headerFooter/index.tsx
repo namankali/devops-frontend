@@ -3,11 +3,14 @@ import type React from "react";
 import { Button, FormControl, InputLabel, MenuItem, Select, Typography, useTheme } from "@mui/material";
 import Icons from "../icons"
 import { useLocation } from "react-router-dom";
+import { useState } from "react";
 const HeaderFooter: React.FC = () => {
     const theme = useTheme()
     const location = useLocation()
-    const handleBranchChange = () => {
-        console.log("back handler is clicked")
+    const [value, setValue] = useState("All")
+    const handleBranchChange = (e: any) => {
+        console.log("back handler is clicked", e.target)
+        setValue(e.target.value)
     }
     return (
         <Box
@@ -33,7 +36,7 @@ const HeaderFooter: React.FC = () => {
                     >
                         <InputLabel sx={{ color: "#94a3b8" }}>Branch</InputLabel>
                         <Select
-                            value={["Development"]}
+                            value={value}
                             label="Select Branch"
                             onChange={handleBranchChange}
                             sx={{
@@ -56,7 +59,13 @@ const HeaderFooter: React.FC = () => {
                                 },
                             }}
                         >
-                            <MenuItem>Main</MenuItem>
+                            {["All", "Main", "Development", "Staging", "Production"].map((str) => (
+                                <MenuItem
+                                    key={str}
+                                    value={str}
+                                >
+                                    {str}
+                                </MenuItem>))}
                         </Select>
                     </FormControl>
                 }
