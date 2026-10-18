@@ -250,6 +250,13 @@ export default class Server {
         );
     }
 
+    static async dashboard_summary(): Promise<any> {
+        return this.makeRequest<any>(
+            "get",
+            "/api/ai/v1/dashboard-summary",
+        )
+    }
+
 
 
     // Kubernetes
