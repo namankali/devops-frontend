@@ -42,7 +42,7 @@ export interface StartConvo {
     message: string
 }
 
-export interface KubernetesStats{
+export interface KubernetesStats {
     title: string,
     value: number,
     sub_value: number,
@@ -50,3 +50,18 @@ export interface KubernetesStats{
     icon: any
 }
 
+export interface DashboardActivityEvent {
+    event_id: string;
+    pipeline_id: string;
+    run_id: number;
+    run_attempt: number;
+    run_number: number;
+    event_type: string;
+    repository: string;
+    branch: string;
+    html_url: string;
+    status: string;
+    timestamp: number;
+    duration: number | null;
+    severity: number | null;
+}

@@ -16,6 +16,47 @@ const convertDateToMinAndSec = (seconds: string) => {
 }
 
 
+function formatDuration(seconds: number | null | undefined): string {
+    if (seconds == null || !Number.isFinite(seconds)) {
+        return "N/A";
+    }
+
+    const totalSeconds = Math.round(seconds);
+
+    if (totalSeconds < 60) {
+        return `${totalSeconds}s`;
+    }
+
+    const minutes = Math.floor(totalSeconds / 60);
+    const remainingSeconds = totalSeconds % 60;
+
+    if (minutes < 60) {
+        return remainingSeconds
+            ? `${minutes}m ${remainingSeconds}s`
+            : `${minutes}m`;
+    }
+
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+
+    return `${hours}h ${remainingMinutes}m`;
+}
+
+function formatRelativeTime(timestamp: number): string {
+    const eventTime = timestamp * 1000;
+    const difference = Math.max(0, Date.now() - eventTime);
+
+    const minutes = Math.floor(difference / 60_000);
+    const hours = Math.floor(difference / 3_600_000);
+    const days = Math.floor(difference / 86_400_000);
+
+    if (minutes < 1) return "Just now";
+    if (minutes < 60) return `${minutes}m ago`;
+    if (hours < 24) return `${hours}h ago`;
+
+    return `${days}d ago`;
+}
+
 const reverseChats = (data: MessagesObj): MessagesObj => {
     if (!data?.messages) return data;
 
@@ -89,10 +130,12 @@ const add_undescore = (text: string) => {
 export {
     formattedDate,
     convertDateToMinAndSec,
+    formatRelativeTime,
     reverseChats,
     filteredPodDetails,
     reducedPodDetails,
     remove_undescore,
     add_undescore,
-    UpperCaseFirstLetter
+    UpperCaseFirstLetter,
+    formatDuration
 }
