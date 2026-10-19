@@ -33,6 +33,9 @@ import { KubernetesOverview } from "./components/kubenetesHealthOverview";
 import type { KubernetesHealthData } from "../../utils/types";
 import { KubernetesStore } from "../../helper/useKubernetesStore";
 import { useKubernetesDashboard } from "../../hooks/useKubernetesDashboard";
+import { useDashboardSummary } from "../../hooks/useDashboardSummary";
+import { formatDuration, formatRelativeTime } from "../../helper/format";
+import type { DashboardActivityEvent } from "../../helper/interfaces";
 
 const DASHBOARD_HEADER_HEIGHT = 76;
 
@@ -133,64 +136,64 @@ const stats = [
     },
 ];
 
-const insights = [
-    {
-        icon: AlertTriangle,
-        title: "ai-devops-api has failed 3 builds in the last 24 hours.",
-        action: "View Details",
-        color: "#ef4444",
-    },
-    {
-        icon: GitPullRequest,
-        title: "devops-frontend has 4 open PRs waiting for review.",
-        action: "View PRs",
-        color: "#8b5cf6",
-    },
-    {
-        icon: AlertTriangle,
-        title: "Suspicious login attempts detected in auth-service logs.",
-        action: "View Logs",
-        color: "#f59e0b",
-    },
-];
+// const insights = [
+//     {
+//         icon: AlertTriangle,
+//         title: "ai-devops-api has failed 3 builds in the last 24 hours.",
+//         action: "View Details",
+//         color: "#ef4444",
+//     },
+//     {
+//         icon: GitPullRequest,
+//         title: "devops-frontend has 4 open PRs waiting for review.",
+//         action: "View PRs",
+//         color: "#8b5cf6",
+//     },
+//     {
+//         icon: AlertTriangle,
+//         title: "Suspicious login attempts detected in auth-service logs.",
+//         action: "View Logs",
+//         color: "#f59e0b",
+//     },
+// ];
 
-const activities = [
-    {
-        icon: GitPullRequest,
-        title: "PR #42 opened in devops-frontend",
-        desc: "Add dark mode support",
-        time: "10m ago",
-        color: "#8b5cf6",
-    },
-    {
-        icon: CircleX,
-        title: "Build #105 failed in ai-devops-api",
-        desc: "Unit tests failed",
-        time: "15hrs ago",
-        color: "#ef4444",
-    },
-    {
-        icon: CircleCheck,
-        title: "Build #104 succeeded in auth-service",
-        desc: "Main branch",
-        time: "5 days ago",
-        color: "#22c55e",
-    },
-    {
-        icon: Rocket,
-        title: "Deployment started for auth-service",
-        desc: "Staging environment",
-        time: "35m ago",
-        color: "#06b6d4",
-    },
-    {
-        icon: Shield,
-        title: "Security alert in auth-service",
-        desc: "Unusual login activity detected",
-        time: "2 days ago",
-        color: "#f59e0b",
-    },
-];
+// const activities = [
+//     {
+//         icon: GitPullRequest,
+//         title: "PR #42 opened in devops-frontend",
+//         desc: "Add dark mode support",
+//         time: "10m ago",
+//         color: "#8b5cf6",
+//     },
+//     {
+//         icon: CircleX,
+//         title: "Build #105 failed in ai-devops-api",
+//         desc: "Unit tests failed",
+//         time: "15hrs ago",
+//         color: "#ef4444",
+//     },
+//     {
+//         icon: CircleCheck,
+//         title: "Build #104 succeeded in auth-service",
+//         desc: "Main branch",
+//         time: "5 days ago",
+//         color: "#22c55e",
+//     },
+//     {
+//         icon: Rocket,
+//         title: "Deployment started for auth-service",
+//         desc: "Staging environment",
+//         time: "35m ago",
+//         color: "#06b6d4",
+//     },
+//     {
+//         icon: Shield,
+//         title: "Security alert in auth-service",
+//         desc: "Unusual login activity detected",
+//         time: "2 days ago",
+//         color: "#f59e0b",
+//     },
+// ];
 
 interface RepoDetails {
     name: string;
@@ -237,6 +240,8 @@ const Home: React.FC = () => {
     const theme = useTheme()
     const [selectedClusterName, setSelectedClusterName] = useState("");
     const { data: rows, isLoading } = useRepoDetailsCount();
+    const { data: dashboardSummaryData } = useDashboardSummary()
+    console.log("dashboardSummaryData", dashboardSummaryData)
     const {
         data: kubDashboardData,
         isLoading: defaultKubeDashboardLoading
@@ -248,6 +253,112 @@ const Home: React.FC = () => {
     const [aiHealthDialogOpen, setAiHealthDialogOpen] = useState(false);
     const [repoDetails, setRepoDetails] = useState<RepoDetails[]>([]);
     const [repoSearch, setRepoSearch] = useState("");
+
+    const metrics = dashboardSummaryData?.ai_insights?.metrics;
+
+    const percentileRows = [
+        { label: "P50", rank: 50, value: metrics?.p50 },
+        { label: "P70", rank: 70, value: metrics?.p70 },
+        { label: "P90", rank: 90, value: metrics?.p90 },
+        { label: "P95", rank: 95, value: metrics?.p95 },
+        { label: "P99", rank: 99, value: metrics?.p99 },
+    ];
+
+    const insights = useMemo(() => {
+        const pipelineCards = dashboardSummaryData?.ai_insights?.cards ?? {}
+        const metrics = dashboardSummaryData?.ai_insights?.metrics
+
+        const pipelineInsights = Object.entries(pipelineCards).map(([pipeline_id, pipeline]: [string, any]) => {
+            const status = pipeline?.status?.toLowerCase();
+            const isFailure = status === "failure" || status === "failed";
+            const isSuccess = status === "success";
+
+            return {
+                id: pipeline_id,
+                icon: isFailure ? AlertTriangle : isSuccess ? CircleCheck : CircleX,
+                title: isFailure
+                    ? `${pipeline.repository} pipeline failed${pipeline.consecutive_failures > 1 ? `(${pipeline.consecutive_failures} consecutive failures)` : ""}.`
+                    : isSuccess
+                        ? `${pipeline.repository} pipeline run #${pipeline.latest_run_number} succeeded.`
+                        : `${pipeline.repository} pipeline status: ${pipeline.status}.`,
+                action: pipeline.html_url
+                    ? "View Workflow"
+                    : "Pipeline Details",
+                color: isFailure
+                    ? "#ef4444"
+                    : isSuccess
+                        ? "#22c55e"
+                        : "#f59e0b",
+                url: pipeline.html_url,
+            }
+        })
+
+        const metricsInsights = metrics && metrics.duration_count > 0
+            // ? [
+            //     {
+            //         id: "pipeline-duration-metrics",
+            //         icon: Bot,
+            //         title: `Pipeline duration: p50 ${formatDuration(metrics.p50)}, p90 ${formatDuration(metrics.p90)}.`,
+            //         action: `Based on ${metrics.duration_count} duration sample${metrics.duration_count === 1 ? "" : "s"}`,
+            //         color: "#a285e5",
+            //     },
+            // ]
+            ? []
+            : []
+        return [...metricsInsights, ...pipelineInsights]
+    }, [dashboardSummaryData])
+
+    const activities = useMemo(() => {
+        const items = dashboardSummaryData?.recent_activity?.items ?? [];
+
+        // Remove duplicate events and sort newest first.
+        const uniqueItems = [
+            ...new Map(
+                items.map((item: DashboardActivityEvent) => [
+                    item.event_id,
+                    item,
+                ])
+            ).values(),
+        ];
+
+        return uniqueItems
+            .sort(
+                (a: any, b: any) => b.timestamp - a.timestamp
+            )
+            .slice(0, 10)
+            .map((event: DashboardActivityEvent) => {
+                const status = event.status.toLowerCase();
+
+                const isFailure = status === "failure" || status === "failed" || event.event_type === "build_failure";
+
+                const isSuccess = status === "success" || status === "successful" || event.event_type === "build_success";
+
+                const Icon = isFailure ? CircleX : isSuccess ? CircleCheck : AlertTriangle;
+
+                const color = isFailure ? "#ef4444" : isSuccess ? "#22c55e" : "#f59e0b";
+
+                const shortRepo = event.repository.split("/").pop() ?? event.repository;
+
+                const outcome = isFailure ? "failed" : isSuccess ? "succeeded" : status;
+
+                const description = [
+                    event.branch,
+                    event.duration != null ? `Duration: ${formatDuration(event.duration)}` : null,
+                ]
+                    .filter(Boolean)
+                    .join(" · ");
+
+                return {
+                    id: event.event_id,
+                    icon: Icon,
+                    title: `Build #${event.run_number} ${outcome} in ${shortRepo}`,
+                    desc: description || `Workflow run ${event.run_id}`,
+                    time: formatRelativeTime(event.timestamp),
+                    color,
+                    url: event.html_url,
+                };
+            });
+    }, [dashboardSummaryData])
 
     const handleClusterNameChange = (e: any) => {
         const clusterName = e.target.value;
@@ -763,19 +874,11 @@ const Home: React.FC = () => {
                                         <Box
                                             component="tr"
                                             sx={{
-                                                color:
-                                                    "#94a3b8",
-                                                textAlign:
-                                                    "left",
-
-                                                position:
-                                                    "sticky",
-
+                                                color: "#94a3b8",
+                                                textAlign: "left",
+                                                position: "sticky",
                                                 top: 0,
-
-                                                background:
-                                                    "#0f172a",
-
+                                                background: "#0f172a",
                                                 zIndex: 1,
                                             }}
                                         >
@@ -795,14 +898,9 @@ const Home: React.FC = () => {
                                                     key={head}
                                                     sx={{
                                                         p: 1.25,
-
                                                         fontSize: 12,
-
-                                                        fontWeight:
-                                                            700,
-
-                                                        whiteSpace:
-                                                            "nowrap",
+                                                        fontWeight: 700,
+                                                        whiteSpace: "nowrap",
                                                     }}
                                                 >
                                                     {head}
@@ -820,11 +918,8 @@ const Home: React.FC = () => {
                                                         repo.name
                                                     }
                                                     sx={{
-                                                        borderTop:
-                                                            "1px solid #1e293b",
-
-                                                        "&:hover":
-                                                        {
+                                                        borderTop: "1px solid #1e293b",
+                                                        "&:hover": {
                                                             background:
                                                                 "rgba(30, 41, 59, 0.45)",
                                                         },
@@ -834,10 +929,8 @@ const Home: React.FC = () => {
                                                         component="td"
                                                         sx={{
                                                             p: 1.25,
-                                                            fontWeight:
-                                                                700,
-                                                            whiteSpace:
-                                                                "nowrap",
+                                                            fontWeight: 700,
+                                                            whiteSpace: "nowrap",
                                                         }}
                                                     >
                                                         {repo.name}
@@ -862,8 +955,7 @@ const Home: React.FC = () => {
                                                         component="td"
                                                         sx={{
                                                             p: 1.25,
-                                                            whiteSpace:
-                                                                "nowrap",
+                                                            whiteSpace: "nowrap",
                                                         }}
                                                     >
                                                         {
@@ -875,8 +967,7 @@ const Home: React.FC = () => {
                                                         component="td"
                                                         sx={{
                                                             p: 1.25,
-                                                            whiteSpace:
-                                                                "nowrap",
+                                                            whiteSpace: "nowrap",
                                                         }}
                                                     >
                                                         {
@@ -892,12 +983,8 @@ const Home: React.FC = () => {
                                                     >
                                                         <Chip
                                                             size="small"
-                                                            label={
-                                                                repo.build
-                                                            }
-                                                            color={getStatusColor(
-                                                                repo.build
-                                                            )}
+                                                            label={repo.build}
+                                                            color={getStatusColor(repo.build)}
                                                         />
                                                     </Box>
 
@@ -905,8 +992,7 @@ const Home: React.FC = () => {
                                                         component="td"
                                                         sx={{
                                                             p: 1.25,
-                                                            textAlign:
-                                                                "center",
+                                                            textAlign: "center",
                                                         }}
                                                     >
                                                         {repo.prs}
@@ -920,12 +1006,8 @@ const Home: React.FC = () => {
                                                     >
                                                         <Chip
                                                             size="small"
-                                                            label={
-                                                                repo.deploy
-                                                            }
-                                                            color={getStatusColor(
-                                                                repo.deploy
-                                                            )}
+                                                            label={repo.deploy}
+                                                            color={getStatusColor(repo.deploy)}
                                                         />
                                                     </Box>
 
@@ -950,8 +1032,7 @@ const Home: React.FC = () => {
                                                         component="td"
                                                         sx={{
                                                             p: 1.25,
-                                                            whiteSpace:
-                                                                "nowrap",
+                                                            whiteSpace: "nowrap",
                                                         }}
                                                     >
                                                         {
@@ -972,10 +1053,8 @@ const Home: React.FC = () => {
                                                         colSpan={9}
                                                         sx={{
                                                             p: 3,
-                                                            textAlign:
-                                                                "center",
-                                                            color:
-                                                                "#64748b",
+                                                            textAlign: "center",
+                                                            color: "#64748b",
                                                         }}
                                                     >
                                                         {repoSearch
@@ -1016,16 +1095,10 @@ const Home: React.FC = () => {
                     <Card
                         sx={{
                             flexShrink: 0,
-
-                            background:
-                                "rgba(15, 23, 42, 0.8)",
-
+                            background: "rgba(15, 23, 42, 0.8)",
                             border: "1px solid #1e293b",
-
                             color: "#e5e7eb",
-
                             borderRadius: 3,
-
                             overflow: "hidden",
                         }}
                     >
@@ -1044,6 +1117,121 @@ const Home: React.FC = () => {
                                 AI Insights
                             </Typography>
 
+                            {metrics?.duration_count > 0 && (
+                                <Box
+                                    sx={{
+                                        p: 1.5,
+                                        mb: 1.5,
+                                        borderRadius: 2,
+                                        background: "rgba(11, 18, 32, 0.9)",
+                                        border: "1px solid #263449",
+                                    }}
+                                >
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            justifyContent: "space-between",
+                                            alignItems: "flex-start",
+                                            gap: 1,
+                                            mb: 1.5,
+                                        }}
+                                    >
+                                        <Box>
+                                            <Typography fontSize={14} fontWeight={800}>
+                                                Pipeline Duration Percentiles
+                                            </Typography>
+                                            <Typography
+                                                color="#A78BFA"
+                                                fontSize={13}
+                                                fontWeight={700}
+                                                sx={{ letterSpacing: 0.6, mt: 0.5 }}
+                                            >
+                                                AUGMENTED AVL ORDER STATISTICS
+                                            </Typography>
+                                        </Box>
+
+                                        <Chip
+                                            size="small"
+                                            label={`${metrics.duration_count} sample${metrics.duration_count === 1 ? "" : "s"
+                                                }`}
+                                            sx={{
+                                                color: "#C4B5FD",
+                                                background: "#272044",
+                                                fontSize: 13,
+                                            }}
+                                        />
+                                    </Box>
+
+                                    <Box
+                                        sx={{
+                                            display: "grid",
+                                            gridTemplateColumns: "repeat(5, minmax(0, 1fr))",
+                                            gap: 0.75,
+                                        }}
+                                    >
+                                        {percentileRows.map(({ label, rank, value }) => (
+                                            <Box
+                                                key={label}
+                                                sx={{
+                                                    minWidth: 0,
+                                                    p: 0.75,
+                                                    borderRadius: 1.5,
+                                                    background: "#111C30",
+                                                    border: "1px solid #273650",
+                                                }}
+                                            >
+                                                <Typography
+                                                    color="#94A3B8"
+                                                    fontSize={14}
+                                                    fontWeight={700}
+                                                >
+                                                    {label}
+                                                </Typography>
+
+                                                <Typography
+                                                    color="#F8FAFC"
+                                                    fontSize={15}
+                                                    fontWeight={800}
+                                                    noWrap
+                                                    sx={{ mt: 0.75 }}
+                                                >
+                                                    {formatDuration(value)}
+                                                </Typography>
+
+                                                <Box
+                                                    sx={{
+                                                        mt: 1,
+                                                        height: 4,
+                                                        borderRadius: 99,
+                                                        background: "#25344B",
+                                                        overflow: "hidden",
+                                                    }}
+                                                >
+                                                    <Box
+                                                        sx={{
+                                                            width: `${rank}%`,
+                                                            height: "100%",
+                                                            borderRadius: 99,
+                                                            background:
+                                                                "linear-gradient(90deg, #6366F1, #A78BFA)",
+                                                        }}
+                                                    />
+                                                </Box>
+                                            </Box>
+                                        ))}
+                                    </Box>
+
+                                    <Typography
+                                        color="#94A3B8"
+                                        fontSize={14}
+                                        sx={{ mt: 1.25, lineHeight: 1.5 }}
+                                    >
+                                        Percentiles calculated from active pipeline-duration
+                                        samples using an augmented AVL tree.
+                                    </Typography>
+                                </Box>
+                            )}
+
                             {insights.map((item) => {
                                 const Icon = item.icon;
 
@@ -1052,29 +1240,20 @@ const Home: React.FC = () => {
                                         key={item.title}
                                         sx={{
                                             p: 1.75,
-
                                             mb: 1.25,
-
                                             "&:last-child": {
                                                 mb: 0,
                                             },
-
                                             borderRadius: 2,
-
                                             background: `${item.color}16`,
-
                                             border: `1px solid ${item.color}33`,
                                         }}
                                     >
                                         <Box
                                             sx={{
-                                                display:
-                                                    "flex",
-
+                                                display: "flex",
                                                 gap: 1.5,
-
-                                                alignItems:
-                                                    "flex-start",
+                                                alignItems: "flex-start",
                                             }}
                                         >
                                             <Box
@@ -1085,9 +1264,7 @@ const Home: React.FC = () => {
                                             >
                                                 <Icon
                                                     size={20}
-                                                    color={
-                                                        item.color
-                                                    }
+                                                    color={item.color}
                                                 />
                                             </Box>
 
@@ -1098,29 +1275,19 @@ const Home: React.FC = () => {
                                             >
                                                 <Typography
                                                     fontWeight={700}
-                                                    fontSize={14}
-                                                    lineHeight={
-                                                        1.4
-                                                    }
+                                                    fontSize={15}
+                                                    lineHeight={1.4}
                                                 >
                                                     {item.title}
                                                 </Typography>
 
                                                 <Typography
-                                                    color={
-                                                        item.color
-                                                    }
-                                                    fontSize={
-                                                        12
-                                                    }
-                                                    fontWeight={
-                                                        600
-                                                    }
+                                                    color={item.color}
+                                                    fontSize={13}
+                                                    fontWeight={600}
                                                     mt={0.75}
                                                 >
-                                                    {
-                                                        item.action
-                                                    }{" "}
+                                                    {item.action}{" "}
                                                     →
                                                 </Typography>
                                             </Box>
@@ -1138,21 +1305,13 @@ const Home: React.FC = () => {
                     <Card
                         sx={{
                             flex: 1,
-
                             minHeight: 0,
-
                             display: "flex",
                             flexDirection: "column",
-
-                            background:
-                                "rgba(15, 23, 42, 0.8)",
-
+                            background: "rgba(15, 23, 42, 0.8)",
                             border: "1px solid #1e293b",
-
                             color: "#e5e7eb",
-
                             borderRadius: 3,
-
                             overflow: "hidden",
                         }}
                     >
@@ -1160,14 +1319,9 @@ const Home: React.FC = () => {
                             sx={{
                                 display: "flex",
                                 flexDirection: "column",
-
                                 flex: 1,
-
                                 minHeight: 0,
-
-                                "&:last-child": {
-                                    pb: 2,
-                                },
+                                "&:last-child": { pb: 2, },
                             }}
                         >
                             <Typography
@@ -1182,30 +1336,22 @@ const Home: React.FC = () => {
                             <Box
                                 sx={{
                                     flex: 1,
-
                                     minHeight: 0,
-
                                     overflowY: "auto",
-
-
                                     "&::-webkit-scrollbar": {
                                         width: 8,
                                     },
-
                                     "&::-webkit-scrollbar-track": {
                                         background: theme.palette.background.default,
                                         borderRadius: 8,
                                     },
-
                                     "&::-webkit-scrollbar-thumb": {
                                         background: theme.palette.primary.main,
                                         borderRadius: 8,
                                     },
-
                                     "&::-webkit-scrollbar-thumb:hover": {
                                         background: theme.palette.primary.dark,
                                     },
-
                                     scrollbarWidth: "thin",
                                     scrollbarColor: `${theme.palette.primary.main} ${theme.palette.background.default}`,
                                 }}
@@ -1217,34 +1363,21 @@ const Home: React.FC = () => {
                                         <Box
                                             key={item.title}
                                             sx={{
-                                                display:
-                                                    "flex",
-
+                                                display: "flex",
                                                 gap: 1.5,
-
                                                 py: 1.5,
-
-                                                borderBottom:
-                                                    "1px solid #1e293b",
+                                                borderBottom: "1px solid #1e293b",
                                             }}
                                         >
                                             <Box
                                                 sx={{
                                                     width: 38,
                                                     height: 38,
-
                                                     flexShrink: 0,
-
                                                     borderRadius: 2,
-
-                                                    display:
-                                                        "grid",
-                                                    placeItems:
-                                                        "center",
-
-                                                    color:
-                                                        item.color,
-
+                                                    display: "grid",
+                                                    placeItems: "center",
+                                                    color: item.color,
                                                     background: `${item.color}22`,
                                                 }}
                                             >
@@ -1259,7 +1392,7 @@ const Home: React.FC = () => {
                                             >
                                                 <Typography
                                                     fontWeight={700}
-                                                    fontSize={14}
+                                                    fontSize={15}
                                                     noWrap
                                                 >
                                                     {item.title}
@@ -1267,7 +1400,7 @@ const Home: React.FC = () => {
 
                                                 <Typography
                                                     color="#94a3b8"
-                                                    fontSize={13}
+                                                    fontSize={14}
                                                     noWrap
                                                 >
                                                     {item.desc}
