@@ -4,12 +4,12 @@ import {
     Box,
     Typography,
     Chip,
+    useTheme,
     LinearProgress,
 } from "@mui/material"
 import { useNavigate } from "react-router-dom"
 import type { KubernetesHealthData } from "../../../utils/types";
 import { CustomSelect } from "../../../components/customSelect";
-import { useState } from "react";
 
 interface KubernetesOverviewProps {
     data: KubernetesHealthData
@@ -25,7 +25,7 @@ export const KubernetesOverview: React.FC<KubernetesOverviewProps> = ({
     handleClusterNameChange
 }) => {
     const navigate = useNavigate();
-
+    const theme = useTheme()
     return (
         <Card
             sx={{
@@ -63,13 +63,14 @@ export const KubernetesOverview: React.FC<KubernetesOverviewProps> = ({
                     <Box>
                         <Typography
                             variant="h5"
-                            fontWeight={800}
+                            fontSize={theme.typography.h5.fontSize}
+                            fontWeight={theme.typography.h5.fontWeight}
                         >
                             Kubernetes Health Overview
                         </Typography>
 
                         <Typography
-                            fontSize={15}
+                            fontSize={theme.typography.h6.fontSize}
                             color="#64748b"
                             mt={0.3}
                         >
@@ -132,7 +133,7 @@ export const KubernetesOverview: React.FC<KubernetesOverviewProps> = ({
                         }}
                     >
                         <Typography
-                            fontSize={14}
+                            fontSize={theme.typography.h6.fontSize}
                             color="#94a3b8"
                             mb={0.5}
                         >
@@ -140,14 +141,14 @@ export const KubernetesOverview: React.FC<KubernetesOverviewProps> = ({
                         </Typography>
 
                         <Typography
-                            fontSize={23}
+                            fontSize={theme.typography.h5.fontSize}
                             fontWeight={800}
                         >
                             {data.nodeReadiness?.percentage}%
                         </Typography>
 
                         <Typography
-                            fontSize={13}
+                            fontSize={theme.typography.body2.fontSize}
                             color={
                                 data.nodeReadiness?.percentage >= 90
                                     ? "#22c55e"
@@ -169,7 +170,7 @@ export const KubernetesOverview: React.FC<KubernetesOverviewProps> = ({
                         }}
                     >
                         <Typography
-                            fontSize={14}
+                            fontSize={theme.typography.h6.fontSize}
                             color="#94a3b8"
                             mb={0.5}
                         >
@@ -177,14 +178,14 @@ export const KubernetesOverview: React.FC<KubernetesOverviewProps> = ({
                         </Typography>
 
                         <Typography
-                            fontSize={23}
+                            fontSize={theme.typography.h5.fontSize}
                             fontWeight={800}
                         >
                             {data.workloadStability?.percentage}%
                         </Typography>
 
                         <Typography
-                            fontSize={13}
+                            fontSize={theme.typography.body2.fontSize}
                             color={
                                 data.workloadStability?.percentage >= 90
                                     ? "#22c55e"
@@ -206,7 +207,7 @@ export const KubernetesOverview: React.FC<KubernetesOverviewProps> = ({
                         }}
                     >
                         <Typography
-                            fontSize={14}
+                            fontSize={theme.typography.h6.fontSize}
                             color="#94a3b8"
                             mb={0.5}
                         >
@@ -214,14 +215,14 @@ export const KubernetesOverview: React.FC<KubernetesOverviewProps> = ({
                         </Typography>
 
                         <Typography
-                            fontSize={23}
+                            fontSize={theme.typography.h5.fontSize}
                             fontWeight={800}
                         >
                             {data.deployments.total}
                         </Typography>
 
                         <Typography
-                            fontSize={13}
+                            fontSize={theme.typography.body2.fontSize}
                             color="#22c55e"
                             mt={0.3}
                         >
@@ -239,7 +240,7 @@ export const KubernetesOverview: React.FC<KubernetesOverviewProps> = ({
                         }}
                     >
                         <Typography
-                            fontSize={14}
+                            fontSize={theme.typography.h6.fontSize}
                             color="#94a3b8"
                             mb={0.5}
                         >
@@ -247,14 +248,14 @@ export const KubernetesOverview: React.FC<KubernetesOverviewProps> = ({
                         </Typography>
 
                         <Typography
-                            fontSize={23}
+                            fontSize={theme.typography.h5.fontSize}
                             fontWeight={800}
                         >
                             {data.attention.count}
                         </Typography>
 
                         <Typography
-                            fontSize={13}
+                            fontSize={theme.typography.body2.fontSize}
                             color={
                                 data.attention.count === 0
                                     ? "#22c55e"
@@ -297,15 +298,15 @@ export const KubernetesOverview: React.FC<KubernetesOverviewProps> = ({
                     >
                         <Box>
                             <Typography
-                                fontSize={16}
-                                fontWeight={700}
+                                fontSize={theme.typography.h6.fontSize}
+                                fontWeight={theme.typography.h6.fontWeight}
                                 mb={0.5}
                             >
                                 Workload Stability
                             </Typography>
 
                             <Typography
-                                fontSize={14}
+                                fontSize={theme.typography.body1.fontSize}
                                 color="#7a899e"
                             >
                                 Current cluster workload condition
@@ -321,14 +322,14 @@ export const KubernetesOverview: React.FC<KubernetesOverviewProps> = ({
                                 }}
                             >
                                 <Typography
-                                    fontSize={15}
+                                    fontSize={theme.typography.body1.fontSize}
                                     color="#919fb4"
                                 >
                                     Stable workloads
                                 </Typography>
 
                                 <Typography
-                                    fontSize={14}
+                                    fontSize={theme.typography.body1.fontSize}
                                     fontWeight={700}
                                 >
                                     {data.workloadStability.percentage}%
@@ -362,14 +363,14 @@ export const KubernetesOverview: React.FC<KubernetesOverviewProps> = ({
                         >
                             <Box>
                                 <Typography
-                                    fontSize={14}
+                                    fontSize={theme.typography.body1.fontSize}
                                     color="#64748b"
                                 >
                                     Running
                                 </Typography>
 
                                 <Typography
-                                    fontSize={18}
+                                    fontSize={theme.typography.h5.fontSize}
                                     fontWeight={800}
                                 >
                                     {data.workloadStability.running}
@@ -378,14 +379,14 @@ export const KubernetesOverview: React.FC<KubernetesOverviewProps> = ({
 
                             <Box>
                                 <Typography
-                                    fontSize={14}
+                                    fontSize={theme.typography.body1.fontSize}
                                     color="#64748b"
                                 >
                                     Unhealthy
                                 </Typography>
 
                                 <Typography
-                                    fontSize={18}
+                                    fontSize={theme.typography.h5.fontSize}
                                     fontWeight={800}
                                     color={
                                         data.workloadStability.unhealthy === 0
@@ -399,14 +400,14 @@ export const KubernetesOverview: React.FC<KubernetesOverviewProps> = ({
 
                             <Box>
                                 <Typography
-                                    fontSize={14}
+                                    fontSize={theme.typography.body1.fontSize}
                                     color="#64748b"
                                 >
                                     Restarts
                                 </Typography>
 
                                 <Typography
-                                    fontSize={18}
+                                    fontSize={theme.typography.h5.fontSize}
                                     fontWeight={800}
                                 >
                                     {data.workloadStability.restarts}
@@ -427,7 +428,7 @@ export const KubernetesOverview: React.FC<KubernetesOverviewProps> = ({
                         }}
                     >
                         <Typography
-                            fontSize={16}
+                            fontSize={theme.typography.h6.fontSize}
                             fontWeight={700}
                             mb={1.5}
                         >
@@ -472,19 +473,19 @@ export const KubernetesOverview: React.FC<KubernetesOverviewProps> = ({
                                             }}
                                         />
 
-                                        <Typography fontSize={15}>
+                                        <Typography fontSize={theme.typography.body1.fontSize}>
                                             {signal.name}
                                         </Typography>
                                     </Box>
 
                                     <Typography
-                                        fontSize={14}
+                                        fontSize={theme.typography.body1.fontSize}
                                         color={
                                             isHealthy
                                                 ? "#22c55e"
                                                 : "#ef4444"
                                         }
-                                        fontWeight={700}
+                                        fontWeight={theme.typography.body1.fontWeight}
                                     >
                                         {signal.value}
                                     </Typography>
@@ -502,9 +503,9 @@ export const KubernetesOverview: React.FC<KubernetesOverviewProps> = ({
                             }}
                         >
                             <Typography
-                                fontSize={14}
+                                fontSize={theme.typography.h6.fontSize}
                                 color="#06b6d4"
-                                fontWeight={700}
+                                fontWeight={theme.typography.h6.fontWeight}
                                 sx={{
                                     cursor: "pointer",
                                     "&:hover": {

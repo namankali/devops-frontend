@@ -49,18 +49,39 @@ export const theme = createTheme({
     fontFamily: "Inter, sans-serif",
 
     h5: {
+      fontSize: "1.25rem",
       fontWeight: 600,
       letterSpacing: "-0.02em",
     },
 
+    h6: {
+      fontSize: "1rem",
+      fontWeight: 700,
+    },
+
     body1: {
       fontSize: "0.95rem",
-      fontWeight: "bold"
+      fontWeight: 700,
     },
 
     body2: {
-      fontSize: "0.80rem",
-      fontWeight: "600"
+      fontSize: "0.8rem",
+      fontWeight: 600,
+    },
+
+    subtitle1: {
+      fontSize: "0.875rem",
+      fontWeight: 500,
+    },
+
+    subtitle2: {
+      fontSize: "0.8125rem",
+      fontWeight: 500,
+    },
+
+    caption: {
+      fontSize: "0.75rem",
+      fontWeight: 500,
     },
 
     button: {
