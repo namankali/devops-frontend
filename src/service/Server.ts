@@ -4,6 +4,7 @@ import Toast from "../utils/toast";
 import type { Login_in } from "../utils/types";
 import type { ApiResponse, BuildChart, BuildRun, LoginResponse, PipelineStats } from "../helper/types";
 import type { MainBranchBuildInfo, StartConvo } from "../helper/interfaces";
+import type { CreateDeploymentMappingPayload } from "../components/deploymentMapping/CustomAdd";
 
 export default class Server {
     // static BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3001"
@@ -371,5 +372,25 @@ export default class Server {
             "get",
             `/api/kubernetes/v1/envs`,
         )
+    }
+
+    static async repository_deployment_targets(): Promise<any> {
+        return this.makeRequest<any>(
+            "get",
+            "/api/repo/v1/repo/dep/targets"
+        );
+    }
+    static async repository_deployment_targets_default_data(): Promise<any> {
+        return this.makeRequest<any>(
+            "get",
+            "/api/repo/v1/default/rdt"
+        );
+    }
+    static async repository_deployment_targets_save(data: CreateDeploymentMappingPayload): Promise<any> {
+        return this.makeRequest<any>(
+            "post",
+            "/api/repo/v1/repo/dep/targets",
+            data
+        );
     }
 }

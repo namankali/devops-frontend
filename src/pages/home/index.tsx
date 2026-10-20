@@ -3,6 +3,11 @@ import { useEffect, useMemo, useState } from "react";
 import {
     Box,
     Typography,
+    Button,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    IconButton,
     Card,
     CardContent,
     Grid,
@@ -23,6 +28,9 @@ import {
     Bot,
     CircleX,
     CircleCheck,
+    ShieldAlert,
+    Network,
+    X,
 } from "lucide-react";
 
 import { useRepoDetailsCount } from "../../hooks/userRepoDetailsCount";
@@ -36,7 +44,7 @@ import { useKubernetesDashboard } from "../../hooks/useKubernetesDashboard";
 import { useDashboardSummary } from "../../hooks/useDashboardSummary";
 import { formatDuration, formatRelativeTime } from "../../helper/format";
 import type { DashboardActivityEvent } from "../../helper/interfaces";
-
+import IncidentImpactMap from "./components/IncidentImpactMap";
 const DASHBOARD_HEADER_HEIGHT = 76;
 
 const kubernetesHealthInitailData: KubernetesHealthData = {
@@ -251,6 +259,10 @@ const Home: React.FC = () => {
 
     const [repoDialogOpen, setRepoDialogOpen] = useState(false);
     const [aiHealthDialogOpen, setAiHealthDialogOpen] = useState(false);
+    const [impactDialogOpen, setImpactDialogOpen] = useState(false);
+    const [selectedIncident, setSelectedIncident] = useState<any | null>(null);
+    const [selectedSourceServiceId, setSelectedSourceServiceId] = useState<string | null>(null);
+    const [selectedSourceLabel, setSelectedSourceLabel] = useState("");
     const [repoDetails, setRepoDetails] = useState<RepoDetails[]>([]);
     const [repoSearch, setRepoSearch] = useState("");
 
@@ -264,9 +276,13 @@ const Home: React.FC = () => {
         { label: "P99", rank: 99, value: metrics?.p99 },
     ];
 
+    const incidents = dashboardSummaryData?.incidents?.items ?? [];
+    const incidentCount =
+        dashboardSummaryData?.incidents?.queue_count ?? incidents.length;
+    const pipelineCards = dashboardSummaryData?.ai_insights?.cards ?? {};
+
     const insights = useMemo(() => {
         const pipelineCards = dashboardSummaryData?.ai_insights?.cards ?? {}
-        const metrics = dashboardSummaryData?.ai_insights?.metrics
 
         const pipelineInsights = Object.entries(pipelineCards).map(([pipeline_id, pipeline]: [string, any]) => {
             const status = pipeline?.status?.toLowerCase();
@@ -293,19 +309,7 @@ const Home: React.FC = () => {
             }
         })
 
-        const metricsInsights = metrics && metrics.duration_count > 0
-            // ? [
-            //     {
-            //         id: "pipeline-duration-metrics",
-            //         icon: Bot,
-            //         title: `Pipeline duration: p50 ${formatDuration(metrics.p50)}, p90 ${formatDuration(metrics.p90)}.`,
-            //         action: `Based on ${metrics.duration_count} duration sample${metrics.duration_count === 1 ? "" : "s"}`,
-            //         color: "#a285e5",
-            //     },
-            // ]
-            ? []
-            : []
-        return [...metricsInsights, ...pipelineInsights]
+        return pipelineInsights
     }, [dashboardSummaryData])
 
     const activities = useMemo(() => {
@@ -1082,10 +1086,10 @@ const Home: React.FC = () => {
                     sx={{
                         display: "flex",
                         flexDirection: "column",
-
                         gap: 2,
-
                         minHeight: 0,
+                        height: "100%",
+                        overflow: "hidden",
                     }}
                 >
                     {/* =================================================
@@ -1094,7 +1098,10 @@ const Home: React.FC = () => {
 
                     <Card
                         sx={{
-                            flexShrink: 0,
+                            flex: 2,
+                            minHeight: 0,
+                            display: "flex",
+                            flexDirection: "column",
                             background: "rgba(15, 23, 42, 0.8)",
                             border: "1px solid #1e293b",
                             color: "#e5e7eb",
@@ -1104,14 +1111,20 @@ const Home: React.FC = () => {
                     >
                         <CardContent
                             sx={{
+                                display: "flex",
+                                flexDirection: "column",
+                                flex: "1 1 0%",
+                                minHeight: 0,
+                                overflow: "hidden",
                                 "&:last-child": {
                                     pb: 2,
                                 },
                             }}
                         >
                             <Typography
-                                variant="h6"
-                                fontWeight={800}
+                                variant="h5"
+                                fontSize={theme.typography.h5.fontSize}
+                                fontWeight={theme.typography.h5.fontWeight}
                                 mb={2}
                             >
                                 AI Insights
@@ -1137,13 +1150,13 @@ const Home: React.FC = () => {
                                         }}
                                     >
                                         <Box>
-                                            <Typography fontSize={14} fontWeight={800}>
+                                            <Typography fontSize={theme.typography.h6.fontSize} fontWeight={800}>
                                                 Pipeline Duration Percentiles
                                             </Typography>
                                             <Typography
                                                 color="#A78BFA"
-                                                fontSize={13}
-                                                fontWeight={700}
+                                                fontSize={theme.typography.body1.fontSize}
+                                                fontWeight={theme.typography.body1.fontWeight}
                                                 sx={{ letterSpacing: 0.6, mt: 0.5 }}
                                             >
                                                 AUGMENTED AVL ORDER STATISTICS
@@ -1157,7 +1170,7 @@ const Home: React.FC = () => {
                                             sx={{
                                                 color: "#C4B5FD",
                                                 background: "#272044",
-                                                fontSize: 13,
+                                                fontSize: theme.typography.body1.fontSize,
                                             }}
                                         />
                                     </Box>
@@ -1182,7 +1195,7 @@ const Home: React.FC = () => {
                                             >
                                                 <Typography
                                                     color="#94A3B8"
-                                                    fontSize={14}
+                                                    fontSize={theme.typography.body1.fontSize}
                                                     fontWeight={700}
                                                 >
                                                     {label}
@@ -1190,7 +1203,7 @@ const Home: React.FC = () => {
 
                                                 <Typography
                                                     color="#F8FAFC"
-                                                    fontSize={15}
+                                                    fontSize={theme.typography.h6.fontSize}
                                                     fontWeight={800}
                                                     noWrap
                                                     sx={{ mt: 0.75 }}
@@ -1220,81 +1233,454 @@ const Home: React.FC = () => {
                                             </Box>
                                         ))}
                                     </Box>
-
-                                    <Typography
-                                        color="#94A3B8"
-                                        fontSize={14}
-                                        sx={{ mt: 1.25, lineHeight: 1.5 }}
-                                    >
-                                        Percentiles calculated from active pipeline-duration
-                                        samples using an augmented AVL tree.
-                                    </Typography>
                                 </Box>
                             )}
 
-                            {insights.map((item) => {
-                                const Icon = item.icon;
+                            {/* Scrollable Incident Queue and Pipeline Insights */}
+                            <Box
+                                sx={{
+                                    flex: 2,
+                                    minHeight: 0,
+                                    maxHeight: "100%",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    overflow: "hidden",
+                                }}
+                            >
 
-                                return (
+                                {/* Incident Queue */}
+                                <Box sx={{
+                                    mt: 1.5,
+                                    flex: "1 1 0%",
+                                    minHeight: 0,
+                                    minWidth: 0,
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    overflow: "hidden",
+                                }}>
+                                    {/* Header */}
                                     <Box
-                                        key={item.title}
                                         sx={{
-                                            p: 1.75,
-                                            mb: 1.25,
-                                            "&:last-child": {
-                                                mb: 0,
-                                            },
-                                            borderRadius: 2,
-                                            background: `${item.color}16`,
-                                            border: `1px solid ${item.color}33`,
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "space-between",
+                                            gap: 1,
+                                            mb: 1.5,
+                                            flexShrink: 0,
                                         }}
                                     >
+                                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                                            <ShieldAlert size={19} color="#f87171" />
+                                            <Typography fontSize={theme.typography.h6.fontSize} fontWeight={theme.typography.h6.fontWeight}>
+                                                Incident Queue
+                                            </Typography>
+                                        </Box>
+
+                                        <Chip
+                                            size="small"
+                                            label={`${incidentCount} pending`}
+                                            icon={<ShieldAlert size={13} />}
+                                            sx={{
+                                                height: 25,
+                                                color: incidentCount > 0 ? "#fca5a5" : "#86efac",
+                                                backgroundColor:
+                                                    incidentCount > 0
+                                                        ? "rgba(239, 68, 68, 0.12)"
+                                                        : "rgba(34, 197, 94, 0.10)",
+                                                border: `1px solid ${incidentCount > 0
+                                                    ? "rgba(239, 68, 68, 0.25)"
+                                                    : "rgba(34, 197, 94, 0.25)"
+                                                    }`,
+                                                "& .MuiChip-icon": {
+                                                    color: "inherit",
+                                                    ml: 0.75,
+                                                },
+                                                "& .MuiChip-label": {
+                                                    px: 1,
+                                                    fontSize: theme.typography.body1.fontSize,
+                                                    fontWeight: theme.typography.body1.fontWeight,
+                                                },
+                                            }}
+                                        />
+                                    </Box>
+
+                                    {/* Incident Cards */}
+                                    {incidents.length > 0 ? (
+                                        <Box sx={{
+                                            flex: "1 1 0%",
+                                            minHeight: 0,
+                                            minWidth: 0,
+                                            overflowY: "auto",
+                                            overflowX: "hidden",
+                                            scrollbarWidth: "thin",
+                                            scrollbarColor: `${theme.palette.primary.main} ${theme.palette.background.default}`,
+                                            "&::-webkit-scrollbar": {
+                                                width: 6,
+                                            },
+                                            "&::-webkit-scrollbar-thumb": {
+                                                background: theme.palette.primary.main,
+                                                borderRadius: 8,
+                                            },
+                                        }}>
+                                            {incidents.map((incident: any) => {
+                                                const pipeline = pipelineCards[incident.pipeline_id];
+                                                const originEvent = (dashboardSummaryData?.recent_activity?.items ?? [])
+                                                    .filter((event: any) => event.pipeline_id === incident.pipeline_id && Boolean(event.service_id))
+                                                    .sort((a: any, b: any) => b.timestamp - a.timestamp)[0];
+
+                                                const severity = Math.max(
+                                                    0,
+                                                    Math.min(10, Number(incident.severity ?? 0))
+                                                );
+
+                                                const isCritical = severity >= 8;
+                                                const severityColor = isCritical ? "#f87171" : "#fbbf24";
+
+                                                return (
+                                                    <Box
+                                                        key={incident.incident_id}
+                                                        sx={{
+                                                            p: 1.75,
+                                                            borderRadius: 2.5,
+                                                            border: `1px solid ${isCritical
+                                                                ? "rgba(239, 68, 68, 0.30)"
+                                                                : "rgba(245, 158, 11, 0.28)"
+                                                                }`,
+                                                            background: isCritical
+                                                                ? "linear-gradient(135deg, rgba(127, 29, 29, 0.18), rgba(15, 23, 42, 0.72))"
+                                                                : "linear-gradient(135deg, rgba(120, 53, 15, 0.14), rgba(15, 23, 42, 0.72))",
+                                                            transition: "border-color 0.2s ease",
+                                                            "&:hover": {
+                                                                borderColor: severityColor,
+                                                            },
+                                                        }}
+                                                    >
+                                                        {/* Incident details and severity */}
+                                                        <Box
+                                                            sx={{
+                                                                display: "flex",
+                                                                alignItems: "flex-start",
+                                                                justifyContent: "space-between",
+                                                                gap: 1.5,
+                                                            }}
+                                                        >
+                                                            <Box sx={{ minWidth: 0, flex: 1 }}>
+                                                                <Box
+                                                                    sx={{
+                                                                        display: "flex",
+                                                                        alignItems: "center",
+                                                                        gap: 0.75,
+                                                                        mb: 0.75,
+                                                                    }}
+                                                                >
+                                                                    <Box
+                                                                        sx={{
+                                                                            width: 6,
+                                                                            height: 6,
+                                                                            borderRadius: "50%",
+                                                                            backgroundColor: severityColor,
+                                                                            flexShrink: 0,
+                                                                        }}
+                                                                    />
+
+                                                                    <Typography
+                                                                        sx={{
+                                                                            color: severityColor,
+                                                                            fontSize: theme.typography.body2.fontSize,
+                                                                            fontWeight: theme.typography.body2.fontWeight,
+                                                                            letterSpacing: 1,
+                                                                        }}
+                                                                    >
+                                                                        BUILD FAILURE
+                                                                    </Typography>
+                                                                </Box>
+
+                                                                <Typography
+                                                                    sx={{
+                                                                        color: "#f1f5f9",
+                                                                        fontSize: theme.typography.body1.fontSize,
+                                                                        fontWeight: theme.typography.body1.fontWeight,
+                                                                        overflowWrap: "anywhere",
+                                                                    }}
+                                                                >
+                                                                    {pipeline?.repository ?? incident.pipeline_id}
+                                                                </Typography>
+
+                                                                <Typography
+                                                                    sx={{
+                                                                        color: "#94a3b8",
+                                                                        fontSize: theme.typography.body2.fontSize,
+                                                                        lineHeight: 1.5,
+                                                                        mt: 0.5,
+                                                                    }}
+                                                                >
+                                                                    {incident.description ?? "Incident detected"}
+                                                                </Typography>
+                                                                <Button
+                                                                    size="small"
+                                                                    startIcon={<Network size={16} />}
+                                                                    onClick={() => {
+                                                                        setSelectedIncident(incident);
+                                                                        setSelectedSourceServiceId(originEvent?.service_id ?? null);
+                                                                        setSelectedSourceLabel(pipeline?.repository ?? incident.pipeline_id);
+                                                                        setImpactDialogOpen(true);
+                                                                    }}
+                                                                    sx={{
+                                                                        mt: 1,
+                                                                        px: 0,
+                                                                        textTransform: "none",
+                                                                        fontWeight: 700,
+                                                                        color: "#7dd3fc",
+                                                                        justifyContent: "flex-start",
+                                                                        alignSelf: "flex-start",
+                                                                        "&:hover": {
+                                                                            backgroundColor: "rgba(14, 165, 233, 0.08)",
+                                                                        },
+                                                                    }}
+                                                                >
+                                                                    View impact graph
+                                                                </Button>
+                                                            </Box>
+
+                                                            {/* Severity indicator */}
+                                                            <Box
+                                                                sx={{
+                                                                    flexShrink: 0,
+                                                                    minWidth: 65,
+                                                                    px: 1,
+                                                                    py: 1,
+                                                                    borderRadius: 2,
+                                                                    textAlign: "center",
+                                                                    backgroundColor: `${severityColor}12`,
+                                                                    border: `1px solid ${severityColor}35`,
+                                                                }}
+                                                            >
+                                                                <Typography
+                                                                    sx={{
+                                                                        color: "#94a3b8",
+                                                                        fontSize: theme.typography.body2.fontSize,
+                                                                        fontWeight: theme.typography.body2.fontWeight,
+                                                                        letterSpacing: 0.5,
+                                                                    }}
+                                                                >
+                                                                    SEVERITY
+                                                                </Typography>
+
+                                                                <Typography
+                                                                    sx={{
+                                                                        color: severityColor,
+                                                                        fontSize: theme.typography.h5.fontSize,
+                                                                        fontWeight: theme.typography.h5.fontWeight,
+                                                                        lineHeight: 1.4,
+                                                                    }}
+                                                                >
+                                                                    {severity}
+                                                                    <Box
+                                                                        component="span"
+                                                                        sx={{
+                                                                            color: "#64748b",
+                                                                            fontSize: theme.typography.body2.fontSize,
+                                                                            fontWeight: theme.typography.body2.fontWeight,
+                                                                        }}
+                                                                    >
+                                                                        /10
+                                                                    </Box>
+                                                                </Typography>
+                                                            </Box>
+                                                        </Box>
+
+                                                        {/* Severity bar */}
+                                                        <LinearProgress
+                                                            variant="determinate"
+                                                            value={severity * 10}
+                                                            sx={{
+                                                                mt: 1.5,
+                                                                height: 4,
+                                                                borderRadius: 10,
+                                                                backgroundColor: "rgba(148, 163, 184, 0.12)",
+                                                                "& .MuiLinearProgress-bar": {
+                                                                    borderRadius: 10,
+                                                                    backgroundColor: severityColor,
+                                                                },
+                                                            }}
+                                                        />
+
+                                                        {/* Run metadata and workflow link */}
+                                                        <Box
+                                                            sx={{
+                                                                display: "flex",
+                                                                alignItems: "center",
+                                                                justifyContent: "space-between",
+                                                                flexWrap: "wrap",
+                                                                gap: 1,
+                                                                mt: 1.5,
+                                                                pt: 1.25,
+                                                                borderTop: "1px solid rgba(148, 163, 184, 0.12)",
+                                                            }}
+                                                        >
+                                                            <Box sx={{ minWidth: 0 }}>
+                                                                <Typography
+                                                                    sx={{
+                                                                        color: "#cbd5e1",
+                                                                        fontSize: theme.typography.body2.fontSize,
+                                                                        fontWeight: theme.typography.body2.fontWeight,
+                                                                    }}
+                                                                >
+                                                                    {pipeline?.branch ?? "Unknown branch"}
+                                                                    {pipeline?.latest_run_number != null &&
+                                                                        ` · Run #${pipeline.latest_run_number}`}
+                                                                </Typography>
+
+                                                                <Typography
+                                                                    sx={{
+                                                                        color: "#64748b",
+                                                                        fontSize: theme.typography.body2.fontSize,
+                                                                        mt: 0.5,
+                                                                    }}
+                                                                >
+                                                                    {formatRelativeTime(incident.timestamp)}
+                                                                </Typography>
+                                                            </Box>
+
+                                                            {pipeline?.html_url && (
+                                                                <Box
+                                                                    component="a"
+                                                                    href={pipeline.html_url}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    sx={{
+                                                                        display: "inline-flex",
+                                                                        alignItems: "center",
+                                                                        gap: 0.5,
+                                                                        flexShrink: 0,
+                                                                        color: "#7dd3fc",
+                                                                        fontSize: theme.typography.body2.fontSize,
+                                                                        fontWeight: theme.typography.body2.fontWeight,
+                                                                        textDecoration: "none",
+                                                                        "&:hover": {
+                                                                            color: "#bae6fd",
+                                                                            textDecoration: "underline",
+                                                                        },
+                                                                    }}
+                                                                >
+                                                                    View workflow ↗
+                                                                </Box>
+                                                            )}
+                                                        </Box>
+                                                    </Box>
+                                                );
+                                            })}
+                                        </Box>
+                                    ) : (
                                         <Box
                                             sx={{
-                                                display: "flex",
-                                                gap: 1.5,
-                                                alignItems: "flex-start",
+                                                py: 3,
+                                                px: 2,
+                                                textAlign: "center",
+                                                borderRadius: 2,
+                                                border: "1px dashed #263449",
+                                                backgroundColor: "rgba(11, 18, 32, 0.45)",
+                                            }}
+                                        >
+                                            <ShieldAlert size={22} color="#64748b" />
+
+                                            <Typography
+                                                sx={{ mt: 1, fontSize: theme.typography.body1.fontSize, fontWeight: 700, color: "#cbd5e1" }}
+                                            >
+                                                No active incidents
+                                            </Typography>
+
+                                            <Typography sx={{ mt: 0.5, fontSize: theme.typography.body2.fontSize, color: "#64748b" }}>
+                                                You're all clear for now.
+                                            </Typography>
+                                        </Box>
+                                    )}
+                                </Box>
+                            </Box>
+
+                            <Box
+                                sx={{
+                                    flex: 1,
+                                    minHeight: 0,
+                                    overflowY: "auto",
+                                    overflowX: "hidden",
+                                    scrollbarWidth: "thin",
+                                    scrollbarColor: `${theme.palette.primary.main} ${theme.palette.background.default}`,
+                                    "&::-webkit-scrollbar": {
+                                        width: 6,
+                                    },
+                                    "&::-webkit-scrollbar-thumb": {
+                                        background: theme.palette.primary.main,
+                                        borderRadius: 8,
+                                    },
+                                }}
+                            >
+                                {insights.map((item) => {
+                                    const Icon = item.icon;
+
+                                    return (
+                                        <Box
+                                            key={item.title}
+                                            sx={{
+                                                p: 1.75,
+                                                mt: 2,
+                                                mb: 1.25,
+                                                "&:last-child": {
+                                                    mb: 0,
+                                                },
+                                                borderRadius: 2,
+                                                background: `${item.color}16`,
+                                                border: `1px solid ${item.color}33`,
                                             }}
                                         >
                                             <Box
                                                 sx={{
-                                                    flexShrink: 0,
-                                                    mt: 0.25,
+                                                    display: "flex",
+                                                    gap: 1.5,
+                                                    alignItems: "flex-start",
                                                 }}
                                             >
-                                                <Icon
-                                                    size={20}
-                                                    color={item.color}
-                                                />
-                                            </Box>
-
-                                            <Box
-                                                sx={{
-                                                    minWidth: 0,
-                                                }}
-                                            >
-                                                <Typography
-                                                    fontWeight={700}
-                                                    fontSize={15}
-                                                    lineHeight={1.4}
+                                                <Box
+                                                    sx={{
+                                                        flexShrink: 0,
+                                                        mt: 0.25,
+                                                    }}
                                                 >
-                                                    {item.title}
-                                                </Typography>
+                                                    <Icon
+                                                        size={20}
+                                                        color={item.color}
+                                                    />
+                                                </Box>
 
-                                                <Typography
-                                                    color={item.color}
-                                                    fontSize={13}
-                                                    fontWeight={600}
-                                                    mt={0.75}
+                                                <Box
+                                                    sx={{
+                                                        minWidth: 0,
+                                                    }}
                                                 >
-                                                    {item.action}{" "}
-                                                    →
-                                                </Typography>
+                                                    <Typography
+                                                        fontWeight={700}
+                                                        fontSize={theme.typography.h6.fontSize}
+                                                        lineHeight={1.4}
+                                                    >
+                                                        {item.title}
+                                                    </Typography>
+
+                                                    <Typography
+                                                        color={item.color}
+                                                        fontSize={theme.typography.body1.fontSize}
+                                                        fontWeight={600}
+                                                        mt={0.75}
+                                                    >
+                                                        {item.action}{" "}
+                                                        →
+                                                    </Typography>
+                                                </Box>
                                             </Box>
                                         </Box>
-                                    </Box>
-                                );
-                            })}
+                                    );
+                                })}
+
+                            </Box>
                         </CardContent>
                     </Card>
 
@@ -1319,14 +1705,16 @@ const Home: React.FC = () => {
                             sx={{
                                 display: "flex",
                                 flexDirection: "column",
-                                flex: 1,
+                                flex: "1 1 0%",
                                 minHeight: 0,
+                                overflow: "hidden",
                                 "&:last-child": { pb: 2, },
                             }}
                         >
                             <Typography
-                                variant="h6"
-                                fontWeight={800}
+                                variant="h5"
+                                fontSize={theme.typography.h5.fontSize}
+                                fontWeight={theme.typography.h5.fontWeight}
                                 mb={2}
                                 flexShrink={0}
                             >
@@ -1391,8 +1779,8 @@ const Home: React.FC = () => {
                                                 }}
                                             >
                                                 <Typography
-                                                    fontWeight={700}
-                                                    fontSize={15}
+                                                    fontWeight={theme.typography.h6.fontWeight}
+                                                    fontSize={theme.typography.h6.fontSize}
                                                     noWrap
                                                 >
                                                     {item.title}
@@ -1400,7 +1788,7 @@ const Home: React.FC = () => {
 
                                                 <Typography
                                                     color="#94a3b8"
-                                                    fontSize={14}
+                                                    fontSize={theme.typography.body1.fontSize}
                                                     noWrap
                                                 >
                                                     {item.desc}
@@ -1409,7 +1797,7 @@ const Home: React.FC = () => {
 
                                             <Typography
                                                 color="#94a3b8"
-                                                fontSize={12}
+                                                fontSize={theme.typography.body1.fontSize}
                                                 sx={{
                                                     flexShrink: 0,
                                                 }}
@@ -1424,6 +1812,67 @@ const Home: React.FC = () => {
                     </Card>
                 </Grid>
             </Grid>
+
+            <Dialog
+                open={impactDialogOpen}
+                onClose={() => setImpactDialogOpen(false)}
+                fullWidth
+                maxWidth="md"
+                scroll="paper"
+                PaperProps={{
+                    sx: {
+                        background: "#0b1220",
+                        color: "#e5e7eb",
+                        border: "1px solid #263449",
+                        borderRadius: 3,
+                        width: "100%",
+                        maxHeight: "85vh",
+                        overflow: "hidden",
+                    },
+                }}
+            >
+                <DialogTitle
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        borderBottom: "1px solid #263449",
+                        pr: 1.5,
+                    }}
+                >
+                    <Network size={20} color="#f87171" />
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <Typography fontWeight={800}>Incident Impact Graph</Typography>
+                        <Typography sx={{ fontSize: 12, color: "#94a3b8" }}>
+                            Explore affected services and impact levels
+                        </Typography>
+                    </Box>
+                    <IconButton
+                        onClick={() => setImpactDialogOpen(false)}
+                        aria-label="Close impact graph"
+                        sx={{ color: "#94a3b8" }}
+                    >
+                        <X size={20} />
+                    </IconButton>
+                </DialogTitle>
+                <DialogContent
+                    dividers
+                    sx={{
+                        p: { xs: 1.5, sm: 3 },
+                        overflowY: "auto",
+                        minHeight: 0,
+                        borderColor: "#263449",
+                    }}
+                >
+                    {selectedIncident && (
+                        <IncidentImpactMap
+                            incident={selectedIncident}
+                            sourceServiceId={selectedSourceServiceId}
+                            sourceLabel={selectedSourceLabel}
+                        />
+                    )}
+                </DialogContent>
+            </Dialog>
 
             {/* =========================================================
                 REPOSITORY DETAILS DIALOG
